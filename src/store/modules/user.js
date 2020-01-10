@@ -1,5 +1,6 @@
-import { login, logout, getInfo } from '@/api/login'
+import { login, logout, getInfo ,baseEnum} from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
+import {removeStore,getStore,setStore} from '@/utils/common'
 
 const user = {
   state: {
@@ -31,6 +32,7 @@ const user = {
       return new Promise((resolve, reject) => {
         login(username, userInfo.password).then(response => {
           const data = response.data
+          console.log(data)
           const tokenStr = data.tokenHead+data.token
           setToken(tokenStr)
           commit('SET_TOKEN', tokenStr)
@@ -38,6 +40,17 @@ const user = {
         }).catch(error => {
           reject(error)
         })
+      })
+    },
+
+    //初始化登录信息
+    async initLoginData () {
+      baseEnum().then(response => {
+        const data = response.data
+        console.log(data)
+        if (data.code === 200) {
+          this.setStore(constant.enums, JSON.stringify(data.data))
+        }
       })
     },
 
@@ -53,6 +66,9 @@ const user = {
           }
           commit('SET_NAME', data.username)
           commit('SET_AVATAR', data.icon)
+          console.log(data)
+        /*  this.commonJs.setStore(this.constants.userInfo, JSON.stringify(data));
+          console.log(this.commonJs.getStore(this.constants.userInfo))*/
           resolve(response)
         }).catch(error => {
           reject(error)
@@ -67,6 +83,7 @@ const user = {
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
           removeToken()
+         /* removeStore(this.constants.userInfo)*/
           resolve()
         }).catch(error => {
           reject(error)

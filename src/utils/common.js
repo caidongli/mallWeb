@@ -9,12 +9,12 @@ import {
  * @param {*} s
  */
 function hasOperation(_this, operationCode) {
-    const operationCodeList = JSON.parse(sessionStorage.getItem("gz_operationList"))
+    const operationCodeList = JSON.parse(sessionStorage.getItem("operationList"))
     return operationCodeList ? (operationCodeList.indexOf(operationCode) !== -1) : false;
 }
 
 function getEnum(_this, enumName) {
-    const enumList = JSON.parse(sessionStorage.getItem("gz_enums"))
+    const enumList = JSON.parse(sessionStorage.getItem("enums"))
     for (let key in enumList) {
         if (key === enumName) {
             return enumList[key]
@@ -43,7 +43,7 @@ function parseCurrentPageParams(_this) {
         hasParams = true
     }
     if (hasParams) {
-        sessionStorage.setItem('gz_current_page_params', JSON.stringify(currentPageParams))
+        sessionStorage.setItem('current_page_params', JSON.stringify(currentPageParams))
     }
 }
 
@@ -152,7 +152,7 @@ function removeStore(name) {
 
 function goToUnAuthJump(system_code, neddReloadEnums) {
     let routerSystemCode = null;
-    let activeRouter = this.getStore(constant.gz_activeRouter);
+    let activeRouter = this.getStore(constant.activeRouter);
     if (activeRouter) {
         const keys = activeRouter.split('=');
         if (keys.length == 2) {
@@ -170,31 +170,31 @@ function goToUnAuthJump(system_code, neddReloadEnums) {
         routerSystemCode = system_code;
         activeRouter = "/";
     }
-    this.setStore(constant.gz_need_reload_enums, neddReloadEnums);
+    this.setStore(constant.need_reload_enums, neddReloadEnums);
     //window.console.log("this routerPath = " + activeRouter);
 
     let getwayDomainReal = getAccessDomain();
-    let selfDomain = constant.gz_self_domain;
-    if (getwayDomainReal == constant.gz_getway_domain_inner) {
+    let selfDomain = constant.self_domain;
+    if (getwayDomainReal == constant.getway_domain_inner) {
         selfDomain = getwayDomainReal; //内网访问方式
     }
 
-    return getAccessDomain() + constant.gz_getway_login_prefix_url +
-        selfDomain + constant.gz_system_prefix + '/' + routerSystemCode + '/#/index?id=' + activeRouter;
+    return getAccessDomain() + constant.getway_login_prefix_url +
+        selfDomain + constant.system_prefix + '/' + routerSystemCode + '/#/index?id=' + activeRouter;
     // return 'http://10.197.38.113/login/#/?redirectUrl=http://10.197.38.113'+systemPrefix+'/'+routerSystemCode+'/#/index?id='+activeRouter;
-    //return constant.gz_getway_login_prefix_url + constant.gz_getway_domain +'/'+ routerSystemCode
+    //return constant.getway_login_prefix_url + constant.getway_domain +'/'+ routerSystemCode
     //            +'-app/'+routerSystemCode+'/common/gz-getway-pass?routerSystemCode='+systemPrefix+'/'+routerSystemCode+'&activeRouter='+activeRouter;
 }
 
 async function getwayPass(system_code) {
-    const isLogin = this.getStore(constant.gz_userInfo) ? true : false // 通过 localStorage获取当前的token是否存在
+    const isLogin = this.getStore(constant.userInfo) ? true : false // 通过 localStorage获取当前的token是否存在
     if (isLogin) {
         //有用户信息，前端跳过检查（转由api请求结果控制有效性）
         return true;
     } else {
         //不存在用户信息了，跳转登录页面或统一网关登录页面
         //window.console.log("jump login path ,,, router.beforeEach path="+to.fullPath);
-        if (constant.gz_getway_login == 'true') {
+        if (constant.getway_login == 'true') {
             //发起后台检测与自动登录
             let requestPreFix = getAccessDomain() + "/" + system_code + "-app/" + system_code + "/";
             const loginUrl = requestPreFix + 'common/gz-getway-pass'
@@ -250,7 +250,7 @@ async function initLoginData(system_code) {
     const enumsUrl = requestPreFix + 'base-enum/enums'
     let enumsResult = await axios.get(enumsUrl)
     if (enumsResult.data.code === 200) {
-        this.setStore(constant.gz_enums, JSON.stringify(enumsResult.data.data));
+        this.setStore(constant.enums, JSON.stringify(enumsResult.data.data));
     }
     //加载动态菜单
     const indexUrl = requestPreFix + 'common/getIndexData'
@@ -268,22 +268,22 @@ async function initLoginData(system_code) {
             userId: indexResult.data.userId,
             enterpriseBaseId: indexResult.data.enterpriseBaseId
         };
-        this.setStore(constant.gz_menus, JSON.stringify(indexResult.data.menus));
-        this.setStore(constant.gz_sysInfo, JSON.stringify(indexResult.data.sysInfo));
-        this.setStore(constant.gz_sysList, JSON.stringify(indexResult.data.sysList));
-        this.setStore(constant.gz_userInfo, JSON.stringify(userInfo));
-        this.setStore(constant.gz_identify, JSON.stringify(indexResult.data.identify));
-        this.setStore(constant.gz_identifys, JSON.stringify(indexResult.data.identifys));
-        this.setStore(constant.gz_operationList, JSON.stringify(indexResult.data.operationList));
+        this.setStore(constant.menus, JSON.stringify(indexResult.data.menus));
+        this.setStore(constant.sysInfo, JSON.stringify(indexResult.data.sysInfo));
+        this.setStore(constant.sysList, JSON.stringify(indexResult.data.sysList));
+        this.setStore(constant.userInfo, JSON.stringify(userInfo));
+        this.setStore(constant.identify, JSON.stringify(indexResult.data.identify));
+        this.setStore(constant.identifys, JSON.stringify(indexResult.data.identifys));
+        this.setStore(constant.operationList, JSON.stringify(indexResult.data.operationList));
     }
 }
 
 function getAccessDomain() {
     let accessDomain = "";
-    if (constant.gz_getway_login == 'true') {
-        accessDomain = constant.gz_getway_domain;
+    if (constant.getway_login == 'true') {
+        accessDomain = constant.getway_domain;
         if (window.location.hostname.indexOf("10.197") != -1) {
-            accessDomain = constant.gz_getway_domain_inner;
+            accessDomain = constant.getway_domain_inner;
         }
     }
     return accessDomain;
@@ -295,10 +295,10 @@ function getAccessDomain() {
  */
 function getFileAccessDomain() {
     let accessDomain = "";
-    if (constant.gz_getway_login == 'true') {
-        accessDomain = constant.gz_getway_domain_file;
+    if (constant.getway_login == 'true') {
+        accessDomain = constant.getway_domain_file;
         if (window.location.hostname.indexOf("10.197") != -1) {
-            accessDomain = constant.gz_getway_domain_inner;
+            accessDomain = constant.getway_domain_inner;
         }
     }
     return accessDomain;
