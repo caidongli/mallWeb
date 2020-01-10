@@ -67,8 +67,8 @@ const user = {
           commit('SET_NAME', data.username)
           commit('SET_AVATAR', data.icon)
           console.log(data)
-        /*  this.commonJs.setStore(this.constants.userInfo, JSON.stringify(data));
-          console.log(this.commonJs.getStore(this.constants.userInfo))*/
+          setStore(this.constants.userInfo, JSON.stringify(data.username));
+          console.log(getStore(this.constants.userInfo))
           resolve(response)
         }).catch(error => {
           reject(error)
@@ -83,7 +83,7 @@ const user = {
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
           removeToken()
-         /* removeStore(this.constants.userInfo)*/
+          removeStore(this.constants.userInfo)
           resolve()
         }).catch(error => {
           reject(error)

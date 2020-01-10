@@ -10,9 +10,9 @@ export const operationList = 'operationList'
 export const activeRouter = 'activeRouter'
 export const current_page_params = 'current_page_params'
 export const projectDriverActiveRouter = 'projectDriverActiveRouter'
-let envData = require('./envData')
-let gzData = {}
-switch (process.env.VUE_APP_MODE) {
+/*let envData = require('./envData')
+let gzData = {}*/
+/*switch (process.env.VUE_APP_MODE) {
   case 'dev': gzData = envData.devData; break
   case 'uat': gzData = envData.uatData; break
   case 'test': gzData = envData.testData; break
@@ -37,7 +37,7 @@ export const getway_domain_file = gzData.getway_domain_file
 // 外部登录地址
 export const getway_login_prefix_url = gzData.getway_login_prefix_url
 // 外部登出地址
-export const getway_login_out_url = gzData.getway_login_out_url
+export const getway_login_out_url = gzData.getway_login_out_url*/
 
 export default {
   enums,
@@ -51,7 +51,7 @@ export default {
   operationList,
   activeRouter,
   current_page_params,
-  projectDriverActiveRouter,
+/*  projectDriverActiveRouter,
   system_prefix,
   prefix_url,
   getway_login,
@@ -60,5 +60,5 @@ export default {
   getway_domain_file,
   getway_login_prefix_url,
   getway_login_out_url,
-  getway_domain_inner
+  getway_domain_inner*/
 }
