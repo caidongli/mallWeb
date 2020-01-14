@@ -1,6 +1,8 @@
 import { login, logout, getInfo ,baseEnum} from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
-import {removeStore,getStore,setStore} from '@/utils/common'
+import constants from '@/utils/constant'
+import {getStore,removeStore,setStore} from '@/utils/common'
+import {enums, sysInfo} from "../../utils/constant";
 
 const user = {
   state: {
@@ -32,10 +34,14 @@ const user = {
       return new Promise((resolve, reject) => {
         login(username, userInfo.password).then(response => {
           const data = response.data
-          console.log(data)
           const tokenStr = data.tokenHead+data.token
           setToken(tokenStr)
           commit('SET_TOKEN', tokenStr)
+          baseEnum().then(response => {
+            const data = response.data
+            setStore(constants.enums, JSON.stringify(data))
+          })
+          // this.initLoginData();
           resolve()
         }).catch(error => {
           reject(error)
@@ -45,13 +51,7 @@ const user = {
 
     //初始化登录信息
     async initLoginData () {
-      baseEnum().then(response => {
-        const data = response.data
-        console.log(data)
-        if (data.code === 200) {
-          this.setStore(constant.enums, JSON.stringify(data.data))
-        }
-      })
+
     },
 
     // 获取用户信息
@@ -66,9 +66,7 @@ const user = {
           }
           commit('SET_NAME', data.username)
           commit('SET_AVATAR', data.icon)
-          console.log(data)
-          setStore(this.constants.userInfo, JSON.stringify(data.username));
-          console.log(getStore(this.constants.userInfo))
+          setStore(constants.userInfo, JSON.stringify(data));
           resolve(response)
         }).catch(error => {
           reject(error)
@@ -83,7 +81,8 @@ const user = {
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
           removeToken()
-          removeStore(this.constants.userInfo)
+          removeStore(constants.userInfo);
+          removeStore(constants.enums)
           resolve()
         }).catch(error => {
           reject(error)

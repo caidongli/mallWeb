@@ -130,14 +130,14 @@ function getMonthEnd(dataFormat) {
 /**
  * 存储sessionStorage
  */
-function setStore(name, content) {
+export function setStore(name, content) {
     sessionStorage.setItem(name, content)
 }
 
 /**
  * 获取sessionStorage
  */
-function getStore(name) {
+export function getStore(name) {
     if (!name) return
     return sessionStorage.getItem(name)
 }
@@ -145,7 +145,7 @@ function getStore(name) {
 /**
  * 删除sessionStorage
  */
-function removeStore(name) {
+export function removeStore(name) {
     if (!name) return
     sessionStorage.removeItem(name)
 }
@@ -424,8 +424,6 @@ export default {
     getMonthStart,
     getMonthEnd,
     moment,
-    setStore,
-    getStore,
     removeStore,
     goToUnAuthJump,
     getwayPass,
