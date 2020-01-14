@@ -18,7 +18,7 @@ export function baseEnum() {
   })
 }
 
-export function updatePassword() {
+export function updatePassword(params) {
   return request({
     url: '/admin/updatePassword',
     method: 'post',

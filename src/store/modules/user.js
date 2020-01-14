@@ -2,7 +2,6 @@ import { login, logout, getInfo ,baseEnum} from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import constants from '@/utils/constant'
 import {getStore,removeStore,setStore} from '@/utils/common'
-import {enums, sysInfo} from "../../utils/constant";
 
 const user = {
   state: {

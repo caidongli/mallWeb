@@ -137,7 +137,7 @@ export function setStore(name, content) {
 /**
  * 获取sessionStorage
  */
-export function getStore(name) {
+function getStore(name) {
     if (!name) return
     return sessionStorage.getItem(name)
 }
@@ -416,23 +416,25 @@ function concatSessionParams(storageName, obj) {
 }
 
 export default {
-    hasOperation,
-    getEnum,
-    convertEnum2String,
-    parseCurrentPageParams,
-    compare,
-    getMonthStart,
-    getMonthEnd,
-    moment,
-    removeStore,
-    goToUnAuthJump,
-    getwayPass,
-    initLoginData,
-    getAccessDomain,
-    getFileAccessDomain,
-    tenThousandToYuan,
-    yuanToTenThousand,
-    deepCopyData,
-    exportFile,
-    concatSessionParams
+  parseCurrentPageParams,
+  getStore,
+  setStore,
+  hasOperation,
+  getEnum,
+  convertEnum2String,
+  compare,
+  getMonthStart,
+  getMonthEnd,
+  moment,
+  removeStore,
+  goToUnAuthJump,
+  getwayPass,
+  initLoginData,
+  getAccessDomain,
+  getFileAccessDomain,
+  tenThousandToYuan,
+  yuanToTenThousand,
+  deepCopyData,
+  exportFile,
+  concatSessionParams
 }

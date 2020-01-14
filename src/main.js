@@ -1,4 +1,6 @@
 import Vue from 'vue'
+import commonJs from './utils/common'
+import constants from './utils/constant'
 
 import 'normalize.css/normalize.css'// A modern alternative to CSS resets
 
@@ -18,7 +20,8 @@ import '@/permission' // permission control
 
 Vue.use(ElementUI, { locale })
 Vue.use(VCharts)
-
+Vue.prototype.commonJs = commonJs
+Vue.prototype.constants = constants
 Vue.config.productionTip = false
 
 new Vue({

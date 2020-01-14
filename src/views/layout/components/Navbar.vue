@@ -26,19 +26,19 @@
       width="450px"
     >
       <el-form :model="passwordForm" :rules="rules" ref="passwordForm" label-width="100px">
-        <el-form-item label="原密码" prop="password">
-          <el-input v-model="passwordForm.username" type="password" placeholder="用户名"></el-input>
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="passwordForm.username" placeholder="用户名" :disabled="true"></el-input>
         </el-form-item>
-        <el-form-item label="新密码" prop="newPassword">
+        <el-form-item label="旧密码" prop="oldPassword">
           <el-input v-model="passwordForm.oldPassword" type="password" placeholder="旧密码"></el-input>
         </el-form-item>
-        <el-form-item label="确认新密码" prop="reNewPassword">
+        <el-form-item label="新密码" prop="newPassword">
           <el-input v-model="passwordForm.newPassword" type="password" placeholder="新密码"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer"class="dialog-footer">
       <el-button @click="dialogVisible = false">取 消</el-button>
-      <el-button type="primary" @click="modifyPassword('passwordForm')">确 定</el-button>
+      <el-button type="primary" @click="modifyPassword()">确 定</el-button>
     </span>
     </el-dialog>
   </div>
@@ -55,6 +55,7 @@
       return {
         dialogVisible: false,
         passwordForm: {
+          id:'',
           username: '',
           oldPassword: '',
           newPassword: ''
@@ -93,6 +94,11 @@
       ])
     },
     methods: {
+      modifyPassword(){
+        updatePassword(this.passwordForm).then(res => {
+          console.log(res)
+        })
+      },
       toggleSideBar() {
         this.$store.dispatch('ToggleSideBar')
       },
@@ -104,7 +110,15 @@
           location.reload() // 为了重新实例化vue-router对象 避免bug
         })
       }
-    }
+    },
+    async mounted() {
+      let param = JSON.parse(this.commonJs.getStore(this.constants.userInfo));
+      this.passwordForm.id = param.id;
+      this.passwordForm.username = param.username;
+    },
+    beforeCreate() {
+      this.commonJs.parseCurrentPageParams(this);
+    },
   }
 </script>
 
