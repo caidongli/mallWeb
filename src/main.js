@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import commonJs from './utils/common'
 import constants from './utils/constant'
+import axios from 'axios'
 
 import 'normalize.css/normalize.css'// A modern alternative to CSS resets
 
@@ -23,6 +24,7 @@ Vue.use(VCharts)
 Vue.prototype.commonJs = commonJs
 Vue.prototype.constants = constants
 Vue.config.productionTip = false
+axios.defaults.baseURL = '/mall'
 
 new Vue({
   el: '#app',
