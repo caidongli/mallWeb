@@ -11,18 +11,13 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      /*'/jsgc': {
-        target: process.env.BASE_API,
+      '/mall': {
+        target: 'http://192.172.1.109:8080',
+        changeOrigin: true,
         pathRewrite: {
-          '^/jsgc': '/'
+          '^/mall': '/'
         }
       },
-      '/file': {
-        target: process.env.ADMIN_API,
-        pathRewrite: {
-          '^/file': '/'
-        }
-      },*/
     },
 
     // Various Dev Server settings

@@ -16,7 +16,7 @@ axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
  */
 export default function ajax(url, data = {}, method = 'GET', type = 'FORM') {
   if (url && !url.startsWith('http')) {
-    url = 'http://192.172.1.109:8080' + url
+    url = url
   }
   return new Promise(function(resolve, reject) {
     // 设置加载动画区域
