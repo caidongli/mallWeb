@@ -1,11 +1,14 @@
 import axios from 'axios'
 import Vue from 'vue'
 import './filter'
+import store from '../store'
+import { getToken } from '@/utils/auth'
 
 // 设置 axios网络配置
 axios.defaults.timeout = 30000 // 超时10秒
 axios.defaults.withCredentials = true // 前后端同一session
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+axios.defaults.headers.common["Authorization"] = getToken();
 // 不使用baseURL,将前后端通过统一nginx代理
 // axios.defaults.baseURL = process.env.VUE_APP_SERVER_URL
 /**
