@@ -12,26 +12,10 @@ export function login(username, password) {
   })
 }
 
-/*
-export function baseEnum() {
-  return request({
-    url: '/base-enum/enums',
-    method: 'get',
-  })
-}
-*/
 
-export const baseEnum = data => ajax('/base-enum/enums', data, 'GET');
+export const baseEnum = data => ajax('/mall/base-enum/enums', data, 'GET');
 
-/*export function updatePassword(params) {
-  return request({
-    url: '/admin/updatePassword',
-    method: 'post',
-    params:params
-  })
-}*/
-
-export const updatePassword = data => ajax('/admin/updatePassword', data, 'POST',JSON);
+export const updatePassword = data => ajax('/mall/admin/updatePassword', data, 'POST',JSON);
 
 export function getInfo() {
   return request({
