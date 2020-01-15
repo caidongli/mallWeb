@@ -96,7 +96,12 @@
     methods: {
       modifyPassword(){
         updatePassword(this.passwordForm).then(res => {
-          console.log(res)
+          if(res.code === 200){
+            this.$message({type: 'success', message: '密码修改成功！'});
+            this.dialogVisible = false
+          }else{
+            this.$message({type: 'error', message: '旧密码不正确！'});
+          }
         })
       },
       toggleSideBar() {

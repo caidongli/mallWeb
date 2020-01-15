@@ -20,18 +20,34 @@ import SidebarItem from './SidebarItem'
 import ScrollBar from '@/components/ScrollBar'
 
 export default {
+  data() {
+    return {
+      userId:'',
+      routes:[],
+    }
+  },
   components: { SidebarItem, ScrollBar },
   computed: {
     ...mapGetters([
       'sidebar'
     ]),
-    routes() {
-      console.log(this.$router.options.routes)
-      return this.$router.options.routes
-    },
     isCollapse() {
       return !this.sidebar.opened
     }
-  }
+  },
+  methods:{
+    getRoutes(){
+      this.routes = this.$router.options.routes
+      console.log(this.routes)
+    },
+  },
+  async mounted() {
+    let param = JSON.parse(this.commonJs.getStore(this.constants.userInfo));
+    this.userId = param.id;
+    this.getRoutes();
+  },
+  beforeCreate() {
+    this.commonJs.parseCurrentPageParams(this);
+  },
 }
 </script>
