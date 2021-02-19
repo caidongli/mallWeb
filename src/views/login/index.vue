@@ -9,13 +9,13 @@
         <div style="text-align: center">
           <svg-icon icon-class="login-mall" style="width: 56px;height: 56px;color: #409EFF"></svg-icon>
         </div>
-        <h2 class="login-title color-main">订单管理</h2>
+        <h2 class="login-title color-main">账单管理</h2>
         <el-form-item prop="username">
           <el-input name="username"
                     type="text"
                     v-model="loginForm.username"
                     autoComplete="on"
-                    placeholder="请输入用户名测1试">
+                    placeholder="请输入用户名">
           <span slot="prefix">
             <svg-icon icon-class="user" class="color-main"></svg-icon>
           </span>
@@ -48,9 +48,13 @@
 </template>
 
 <script>
-  import {isvalidUsername} from '@/utils/validate';
+  import { login,getToken } from '@/api/login'
+  import { setToken } from '@/utils/auth'
   import {setSupport,getSupport,setCookie,getCookie} from '@/utils/support';
+  import {getStore,removeStore,setStore} from '@/utils/common'
+  import {isvalidUsername} from '@/utils/validate';
   import login_center_bg from '@/assets/images/login_center_bg.png'
+  import {userInfo} from "../../utils/constant";
 
   export default {
     name: 'login',
@@ -112,13 +116,20 @@
             //   return;
             // }
             this.loading = true;
-            this.$store.dispatch('Login', this.loginForm).then(() => {
-              this.loading = false;
-              setCookie("username",this.loginForm.username,15);
-              setCookie("password",this.loginForm.password,15);
-              this.$router.push({path: '/'})
-            }).catch(() => {
-              this.loading = false
+            getToken(this.loginForm).then(res => {
+              if(res.code ===0){
+                setCookie("username",this.loginForm.username,15);
+                setToken(res.data);
+                login(this.loginForm).then(res => {
+                  if(res.code === 0){
+                    setStore("userInfo", JSON.stringify(res.data))
+                    this.loading = false;
+                    this.$router.push({path: '/'})
+                  }
+                }).catch(() => {
+                  this.loading = false
+                })
+              }
             })
           } else {
             console.log('参数验证不合法！');

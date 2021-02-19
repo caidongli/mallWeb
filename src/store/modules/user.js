@@ -1,4 +1,4 @@
-import { login, logout, getInfo ,baseEnum} from '@/api/login'
+import { login, logout ,baseEnum} from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import constants from '@/utils/constant'
 import {getStore,removeStore,setStore} from '@/utils/common'
@@ -54,7 +54,7 @@ const user = {
     },
 
     // 获取用户信息
-    GetInfo({ commit, state }) {
+/*    GetInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
         getInfo().then(response => {
           const data = response.data
@@ -71,7 +71,7 @@ const user = {
           reject(error)
         })
       })
-    },
+    },*/
 
     // 登出
     LogOut({ commit, state }) {
