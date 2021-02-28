@@ -48,108 +48,110 @@
 </template>
 
 <script>
-  import { login,getToken } from '@/api/login'
-  import { setToken } from '@/utils/auth'
-  import {setSupport,getSupport,setCookie,getCookie} from '@/utils/support';
-  import {getStore,removeStore,setStore} from '@/utils/common'
-  import {isvalidUsername} from '@/utils/validate';
-  import login_center_bg from '@/assets/images/login_center_bg.png'
-  import {userInfo} from "../../utils/constant";
+    import { login,getToken } from '@/api/login'
+    import { setToken } from '@/utils/auth'
+    import {setSupport,setCookie,getCookie} from '@/utils/support';
+    import {setStore} from '@/utils/common'
+    import {isvalidUsername} from '@/utils/validate';
+    import login_center_bg from '@/assets/images/login_center_bg.png'
+    import {userInfo} from "../../utils/constant";
 
-  export default {
-    name: 'login',
-    data() {
-      const validateUsername = (rule, value, callback) => {
-        if (!isvalidUsername(value)) {
-          callback(new Error('请输入正确的用户名'))
-        } else {
-          callback()
-        }
-      };
-      const validatePass = (rule, value, callback) => {
-        if (value.length < 6) {
-          callback(new Error('密码不能小于6位'))
-        } else {
-          callback()
-        }
-      };
-      return {
-        loginForm: {
-          username: '',
-          password: '',
+    export default {
+        name: 'login',
+        data() {
+            const validateUsername = (rule, value, callback) => {
+                if (!isvalidUsername(value)) {
+                    callback(new Error('请输入正确的用户名'))
+                } else {
+                    callback()
+                }
+            };
+            const validatePass = (rule, value, callback) => {
+                if (value.length < 6) {
+                    callback(new Error('密码不能小于6位'))
+                } else {
+                    callback()
+                }
+            };
+            return {
+                loginForm: {
+                    username: '',
+                    password: '',
+                },
+                loginRules: {
+                    username: [{required: true, trigger: 'blur', validator: validateUsername}],
+                    password: [{required: true, trigger: 'blur', validator: validatePass}]
+                },
+                loading: false,
+                pwdType: 'password',
+                login_center_bg,
+                dialogVisible:false,
+                supportDialogVisible:false
+            }
         },
-        loginRules: {
-          username: [{required: true, trigger: 'blur', validator: validateUsername}],
-          password: [{required: true, trigger: 'blur', validator: validatePass}]
+        created() {
+            this.loginForm.username = getCookie("username");
+            this.loginForm.password = getCookie("password");
+            if(this.loginForm.username === undefined||this.loginForm.username==null||this.loginForm.username===''){
+                this.loginForm.username = 'admin';
+            }
+            if(this.loginForm.password === undefined||this.loginForm.password==null){
+                this.loginForm.password = '';
+            }
         },
-        loading: false,
-        pwdType: 'password',
-        login_center_bg,
-        dialogVisible:false,
-        supportDialogVisible:false
-      }
-    },
-    created() {
-      this.loginForm.username = getCookie("username");
-      this.loginForm.password = getCookie("password");
-      if(this.loginForm.username === undefined||this.loginForm.username==null||this.loginForm.username===''){
-        this.loginForm.username = 'admin';
-      }
-      if(this.loginForm.password === undefined||this.loginForm.password==null){
-        this.loginForm.password = '';
-      }
-    },
-    methods: {
-      showPwd() {
-        if (this.pwdType === 'password') {
-          this.pwdType = ''
-        } else {
-          this.pwdType = 'password'
-        }
-      },
-      handleLogin() {
-        this.$refs.loginForm.validate(valid => {
-          if (valid) {
-            // let isSupport = getSupport();
-            // if(isSupport===undefined||isSupport==null){
-            //   this.dialogVisible =true;
-            //   return;
-            // }
-            this.loading = true;
-            getToken(this.loginForm).then(res => {
-              if(res.code ===0){
-                setCookie("username",this.loginForm.username,15);
-                setToken(res.data);
-                login(this.loginForm).then(res => {
-                  if(res.code === 0){
-                    setStore("userInfo", JSON.stringify(res.data))
-                    this.loading = false;
-                    this.$router.push({path: '/'})
-                  }
-                }).catch(() => {
-                  this.loading = false
+        methods: {
+            showPwd() {
+                if (this.pwdType === 'password') {
+                    this.pwdType = ''
+                } else {
+                    this.pwdType = 'password'
+                }
+            },
+            handleLogin() {
+                this.$refs.loginForm.validate(valid => {
+                    if (valid) {
+                        this.loading = true;
+                        getToken(this.loginForm).then(res => {
+                            if(res.code ===0){
+                                setCookie("username",this.loginForm.username,15);
+                                setToken(res.data);
+                                login(this.loginForm).then(res => {
+                                    this.loading = false;
+                                    if(res.code === 0){
+                                        setStore("userInfo", JSON.stringify(res.data))
+                                        this.$router.push({path: '/'})
+                                    }
+                                }).catch(() => {
+                                    this.$message.error('登录错误!');
+                                    this.loading = false
+                                })
+                            }else{
+                                this.$message.error('密码错误!');
+                                this.loading = false;
+                            }
+                        }).catch(() => {
+                            this.$message.error('登录异常!再次尝试');
+                            this.loading = false
+                        })
+                    } else {
+                        this.$message.error('参数不合法!');
+                        return false
+                    }
                 })
-              }
-            })
-          } else {
-            console.log('参数验证不合法！');
-            return false
-          }
-        })
-      },
-      handleTry(){
-        this.dialogVisible =true
-      },
-      dialogConfirm(){
-        this.dialogVisible =false;
-        setSupport(true);
-      },
-      dialogCancel(){
-        this.dialogVisible = false;
-        setSupport(false);
-      }
+            },
+            handleTry(){
+                this.dialogVisible =true
+            },
+            dialogConfirm(){
+                this.dialogVisible =false;
+                setSupport(true);
+            },
+            dialogCancel(){
+                this.dialogVisible = false;
+                setSupport(false);
+            }
+        }
     }
-  }
 </script>
 
 <style scoped>

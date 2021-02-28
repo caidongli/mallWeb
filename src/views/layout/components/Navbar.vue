@@ -45,7 +45,9 @@
 </template>
 
 <script>
-  import { updatePassword } from '@/api/login'
+  import { updatePassword,logout } from '@/api/login'
+  import {removeStore} from '@/utils/common'
+  import {removeToken } from '@/utils/auth'
   import { mapGetters } from 'vuex'
   import Breadcrumb from '@/components/Breadcrumb'
   import Hamburger from '@/components/Hamburger'
@@ -54,13 +56,16 @@
     data() {
       return {
         dialogVisible: false,
-        passwordForm: {
-          id:'',
-          username: '',
-          oldPassword: '',
-          newPassword: ''
-        },
-        rules: {
+          passwordForm: {
+              id:'',
+              username: '',
+              oldPassword: '',
+              newPassword: ''
+          },
+          loginOutInfo: {
+              username: ''
+          },
+          rules: {
           oldPassword: [
             {
               required: true,
@@ -110,11 +115,16 @@
       updatePwd(){
         this.dialogVisible = true;
       },
-      logout() {
-        this.$store.dispatch('LogOut').then(() => {
-          location.reload() // 为了重新实例化vue-router对象 避免bug
-        })
-      }
+        logout() {
+            let param = JSON.parse(this.commonJs.getStore(this.constants.userInfo));
+            console.log(param)
+            this.loginOutInfo.username = param.username
+                logout(this.loginOutInfo).then(res => {
+                    removeToken()
+                    removeStore(this.constants.userInfo);
+                    location.reload() // 为了重新实例化vue-router对象 避免bug
+            })
+        }
     },
     async mounted() {
       let param = JSON.parse(this.commonJs.getStore(this.constants.userInfo));

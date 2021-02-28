@@ -3,13 +3,13 @@ const product = [
     path: 'product',
     name: 'product',
     component: () => import('@/views/pms/product/index'),
-    meta: {title: '商品列表', icon: 'product-list'}
+    meta: {title: '用户列表', icon: 'product-list'}
   },
   {
     path: 'addProduct',
     name: 'addProduct',
     component: () => import('@/views/pms/product/add'),
-    meta: {title: '添加商品', icon: 'product-add'}
+    meta: {title: '角色列表', icon: 'product-add'}
   },
   {
     path: 'updateProduct',
