@@ -3,7 +3,7 @@ const TokenKey = 'loginToken'
 
 export function getToken() {
   let token = sessionStorage.getItem(TokenKey);
-  return token;
+  return "Bearer "+token;
 }
 
 export function setToken(token) {

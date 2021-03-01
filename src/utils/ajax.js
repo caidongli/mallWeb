@@ -8,7 +8,6 @@ import { getToken } from '@/utils/auth'
 axios.defaults.timeout = 30000 // 超时10秒
 axios.defaults.withCredentials = true // 前后端同一session
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
-axios.defaults.headers.common["Authorization"] = getToken();
 // 不使用baseURL,将前后端通过统一nginx代理
 // axios.defaults.baseURL = process.env.VUE_APP_SERVER_URL
 /**
@@ -18,6 +17,7 @@ axios.defaults.headers.common["Authorization"] = getToken();
  * @param {*} type  提交数据格式 form/json
  */
 export default function ajax(url, data = {}, method = 'GET', type = 'FORM') {
+  axios.defaults.headers.common["Authorization"] = getToken();
   if (url && !url.startsWith('http')) {
     url = url
   }

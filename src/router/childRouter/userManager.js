@@ -2,16 +2,16 @@ const product = [
   {
     path: 'product',
     name: 'product',
-    component: () => import('@/views/pms/product/index'),
+    component: () => import('@/views/ums/user/index'),
     meta: {title: '用户列表', icon: 'product-list'}
   },
   {
     path: 'addProduct',
     name: 'addProduct',
-    component: () => import('@/views/pms/product/add'),
+    component: () => import('@/views/ums/role/index'),
     meta: {title: '角色列表', icon: 'product-add'}
   },
-  {
+ /* {
     path: 'updateProduct',
     name: 'updateProduct',
     component: () => import('@/views/pms/product/update'),
@@ -98,7 +98,7 @@ const product = [
     component: () => import('@/views/pms/brand/update'),
     meta: {title: '编辑品牌'},
     hidden: true
-  }
+  }*/
 ]
 
 export default product;
