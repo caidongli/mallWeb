@@ -86,7 +86,7 @@
     import { queryUserByPage } from '@/api/user'
 
   export default {
-    name: "productList",
+    name: "userList",
     data() {
       return {
           pageNum: 1,
@@ -131,13 +131,13 @@
                 this.loading = false
             })
         },
-        userShow(){
+        userShow(index,row){
 
         },
-        userUpdate(){
-            this.$router.push({path:'/pms/updateProduct',query:{id:row.id}});
+        userUpdate(index,row){
+            this.$router.push({path:'/user/userEdit',query:{id:row.id}});
         },
-        userDelete(){
+        userDelete(index,row){
 
         },
         handleResetSearch(){

@@ -1,9 +1,16 @@
 const product = [
   {
-    path: 'product',
-    name: 'product',
+    path: 'userList',
+    name: 'userList',
     component: () => import('@/views/ums/user/index'),
     meta: {title: '用户列表', icon: 'product-list'}
+  },
+  {
+    path: 'userEdit',
+    name: 'userEdit',
+    component: () => import('@/views/ums/user/update'),
+    meta: {title: '用户编辑', icon: 'product-edit'},
+    hidden: true
   },
   {
     path: 'addProduct',
