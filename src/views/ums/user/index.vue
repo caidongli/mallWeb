@@ -32,7 +32,7 @@
       <span>数据列表</span>
       <el-button
         class="btn-add"
-        @click="handleAddProduct()"
+        @click="addUser(false)"
         size="mini">
         添加
       </el-button>
@@ -49,11 +49,11 @@
             <p>
               <el-button
                 size="mini"
-                @click="userShow(scope.$index, scope.row)">查看
+                @click="userShow(scope.$index, scope.row,true)">查看
               </el-button>
               <el-button
                 size="mini"
-                @click="userUpdate(scope.$index, scope.row)">编辑
+                @click="userUpdate(scope.$index, scope.row,false)">编辑
               </el-button>
               <el-button
                 size="mini"
@@ -83,7 +83,7 @@
   </div>
 </template>
 <script>
-    import { queryUserByPage } from '@/api/user'
+    import { queryUserByPage,deleteUser } from '@/api/user'
 
   export default {
     name: "userList",
@@ -131,14 +131,24 @@
                 this.loading = false
             })
         },
-        userShow(index,row){
-
+        addUser(readonly){
+            this.$router.push({name:'userEdit',params:{readonly: readonly}});
         },
-        userUpdate(index,row){
-            this.$router.push({path:'/user/userEdit',query:{id:row.id}});
+        userShow(index,row,readonly){
+            this.$router.push({name:'userEdit',params:{id:row.id,readonly: readonly}});
+        },
+        userUpdate(index,row,readonly){
+            this.$router.push({name:'userEdit',params:{id:row.id,readonly: readonly}});
         },
         userDelete(index,row){
-
+            deleteUser({id:row.id}).then(res => {
+                if (res.code === 0) {
+                    this.loadData();
+                }
+            }).catch(() => {
+                this.$message.error('请求错误!');
+                this.loading = false
+            })
         },
         handleResetSearch(){
             this.searchFormData.queryName = '';
