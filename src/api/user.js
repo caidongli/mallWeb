@@ -19,3 +19,6 @@ export const updateRoleRelationBatch = data => ajax('/admin/user/updateRoleRelat
 export const updatePassword = data => ajax('/admin/user/updatePassword', data, 'POST',JSON);
 
 export const initPassword = data => ajax('/admin/user/initPassword', data, 'POST',JSON);
+
+export const queryUserRole = data => ajax('/admin/user/queryUserRole', data, 'POST',JSON);
+

@@ -45,7 +45,7 @@
 </template>
 
 <script>
-  import { updatePassword,logout } from '@/api/login'
+  import { logout } from '@/api/login'
   import {removeStore} from '@/utils/common'
   import {removeToken } from '@/utils/auth'
   import { mapGetters } from 'vuex'
@@ -117,7 +117,6 @@
       },
         logout() {
             let param = JSON.parse(this.commonJs.getStore(this.constants.userInfo));
-            console.log(param)
             this.loginOutInfo.username = param.username
                 logout(this.loginOutInfo).then(res => {
                     removeToken()

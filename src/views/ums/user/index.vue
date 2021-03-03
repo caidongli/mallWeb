@@ -39,7 +39,7 @@
     </el-card>
     <div class="table-container">
       <el-table :data="tableData" border stripe>
-<!--        <el-table-column hidden type="index" label="序号" ></el-table-column>-->
+        <!--        <el-table-column hidden type="index" label="序号" ></el-table-column>-->
         <el-table-column prop="username" label="用户名" ></el-table-column>
         <el-table-column prop="phone" label="手机号" ></el-table-column>
         <el-table-column prop="email" label="邮箱" ></el-table-column>
@@ -57,7 +57,7 @@
               </el-button>
               <el-button
                 size="mini"
-                @click="userUpdate(scope.$index, scope.row)">角色
+                @click="chooseUserRole(scope.row)">角色
               </el-button>
               <el-button
                 size="mini"
@@ -80,81 +80,100 @@
         :total="this.total"
       ></el-pagination>
     </div>
+    <chooseRole
+      :openDialogChoose="openDialogChoose"
+      :userId="this.params.userId"
+      @closeOpenDialog="closeOpenDialog"
+    ></chooseRole>
   </div>
 </template>
 <script>
+    import chooseRole from './conponents/choose-role'
     import { queryUserByPage,deleteUser } from '@/api/user'
-
-  export default {
-    name: "userList",
-    data() {
-      return {
-          pageNum: 1,
-          pageSize: 10,
-          total: 0,
-          tableData: [], //表格数据
-          searchFormData: {
-              queryName: '',
-          }
-      }
-    },
-    created() {
-      this.loadData();
-    },
-    methods: {
-        //分页大小，重新加载
-        handleSizeChange: function(size) {
-            this.pageSize = size;
-            if (size > this.total) {
-                this.pageNum = 1
+    export default {
+        name: "userList",
+        components: {chooseRole},
+        data() {
+            return {
+                pageNum: 1,
+                pageSize: 10,
+                total: 0,
+                tableData: [], //表格数据
+                searchFormData: {
+                    queryName: '',
+                },
+                openDialogChoose: false,
+                params:{
+                    userId:''
+                }
             }
-            this.loadData()
         },
-        //选择页数，重新加载
-        handleCurrentChange: function(pageNum) {
-            this.pageNum = pageNum;
-            this.loadData()
+        created() {
+            this.loadData();
         },
-        loadData() {
-            let param = {
-                username: this.searchFormData.queryName,
-                pageNum: this.pageNum,
-                pageSize: this.pageSize,
-            };
-            queryUserByPage(param).then(res => {
-                if (res.code === 0) {
-                    this.tableData = res.data.records;
-                    this.total = res.data.total
+        methods: {
+            //分页大小，重新加载
+            handleSizeChange: function(size) {
+                this.pageSize = size;
+                if (size > this.total) {
+                    this.pageNum = 1
                 }
-            }).catch(() => {
-                this.$message.error('请求错误!');
-                this.loading = false
-            })
-        },
-        addUser(readonly){
-            this.$router.push({name:'userEdit',params:{readonly: readonly}});
-        },
-        userShow(index,row,readonly){
-            this.$router.push({name:'userEdit',params:{id:row.id,readonly: readonly}});
-        },
-        userUpdate(index,row,readonly){
-            this.$router.push({name:'userEdit',params:{id:row.id,readonly: readonly}});
-        },
-        userDelete(index,row){
-            deleteUser({id:row.id}).then(res => {
-                if (res.code === 0) {
-                    this.loadData();
-                }
-            }).catch(() => {
-                this.$message.error('请求错误!');
-                this.loading = false
-            })
-        },
-        handleResetSearch(){
-            this.searchFormData.queryName = '';
+                this.loadData()
+            },
+            //选择页数，重新加载
+            handleCurrentChange: function(pageNum) {
+                this.pageNum = pageNum;
+                this.loadData()
+            },
+            loadData() {
+                let param = {
+                    username: this.searchFormData.queryName,
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
+                };
+                queryUserByPage(param).then(res => {
+                    if (res.code === 0) {
+                        this.tableData = res.data.records;
+                        this.total = res.data.total
+                    }else {
+                        this.$message.error(res.msg);
+                    }
+                }).catch(() => {
+                    this.$message.error('请求错误!');
+                    this.loading = false
+                })
+            },
+            addUser(readonly){
+                this.$router.push({name:'userEdit',params:{readonly: readonly}});
+            },
+            userShow(index,row,readonly){
+                this.$router.push({name:'userEdit',params:{id:row.id,readonly: readonly}});
+            },
+            userUpdate(index,row,readonly){
+                this.$router.push({name:'userEdit',params:{id:row.id,readonly: readonly}});
+            },
+            chooseUserRole(row){
+                this.params.userId = row.id;
+                this.openDialogChoose = true
+            },
+            userDelete(index,row){
+                deleteUser({id:row.id}).then(res => {
+                    if (res.code === 0) {
+                        this.loadData();
+                    }
+                }).catch(() => {
+                    this.$message.error('请求错误!');
+                    this.loading = false
+                })
+            },
+            handleResetSearch(){
+                this.searchFormData.queryName = '';
+            },
+            closeOpenDialog(){
+                this.openDialogChoose = false
+            }
         }
     }
-  }
 </script>
 <style></style>
 
