@@ -38,16 +38,12 @@
       </el-button>
     </el-card>
     <div class="table-container">
-      <el-table :data="tableData"
-                ref="multipleTable"
-                border stripe>
+      <el-table :data="tableData" border stripe>
         <!--        <el-table-column hidden type="index" label="序号" ></el-table-column>-->
         <el-table-column prop="username" label="用户名" ></el-table-column>
         <el-table-column prop="phone" label="手机号" ></el-table-column>
         <el-table-column prop="email" label="邮箱" ></el-table-column>
         <el-table-column prop="nickName" label="姓名"></el-table-column>
-        <el-table-column  type="selection" class="checkbox-inp" width="55">
-        </el-table-column>
         <el-table-column label="操作" width="360" align="center">
           <template slot-scope="scope">
             <p>
@@ -84,19 +80,20 @@
         :total="this.total"
       ></el-pagination>
     </div>
-    <!--<chooseRole
+    <chooseRole
       :openDialogChoose="openDialogChoose"
       :userId="this.params.userId"
+      :reload="this.params.reload"
       @closeOpenDialog="closeOpenDialog"
-    ></chooseRole>-->
+    ></chooseRole>
   </div>
 </template>
 <script>
-    // import chooseRole from './conponents/choose-role'
+    import chooseRole from './conponents/choose-role'
     import { queryUserByPage,deleteUser } from '@/api/user'
     export default {
         name: "userList",
-        // components: {chooseRole},
+        components: {chooseRole},
         data() {
             return {
                 pageNum: 1,
@@ -108,26 +105,15 @@
                 },
                 openDialogChoose: false,
                 params:{
-                    userId:''
+                    userId:'',
+                    reload:'',
                 }
             }
         },
-      watch: {
-        tableData: {
-          handler(newValue, oldValue) {
-            this.loadTableSelection();
-          },
-          deep: true
-        }
-      },
         created() {
             this.loadData();
         },
-
         methods: {
-          handleSelectionChange(row, event, column){
-            console.log("11")
-          },
             //分页大小，重新加载
             handleSizeChange: function(size) {
                 this.pageSize = size;
@@ -141,31 +127,22 @@
                 this.pageNum = pageNum;
                 this.loadData()
             },
-          loadData(){
-             let param = {
-               username: this.searchFormData.queryName,
-               pageNum: this.pageNum,
-               pageSize: this.pageSize,
-             };
-             queryUserByPage(param).then(res => {
-               if (res.code === 0) {
-                 this.tableData = res.data.records;
-                 this.total = res.data.total
-               }else {
-                 this.$message.error(res.msg);
-               }
-             }).catch(() => {
-               this.$message.error('请求错误!');
-               this.loading = false
-             })
+            loadData() {
+                let param = {
+                    username: this.searchFormData.queryName,
+                    pageNum: this.pageNum,
+                    pageSize: this.pageSize,
+                };
+                queryUserByPage(param).then(res => {
+                    if (res.code === 0) {
+                        this.tableData = res.data.records;
+                        this.total = res.data.total
+                    }
+                }).catch(() => {
+                    this.$message.error('请求错误!');
+                    this.loading = false
+                })
             },
-          loadTableSelection(){
-            this.$nextTick(() => {
-              this.tableData.forEach(row=>{
-                this.$refs.multipleTable.toggleRowSelection(row,true);
-              })
-            })
-          },
             addUser(readonly){
                 this.$router.push({name:'userEdit',params:{readonly: readonly}});
             },
@@ -177,6 +154,7 @@
             },
             chooseUserRole(row){
                 this.params.userId = row.id;
+                this.params.reload = new Date().toLocaleString();
                 this.openDialogChoose = true
             },
             userDelete(index,row){
