@@ -210,23 +210,23 @@
       },
       handleStatusChange(index, row) {
         this.$confirm('是否要修改该状态?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          updateStatus(row.id, {status: row.status}).then(response => {
-            this.$message({
-              type: 'success',
-              message: '修改成功!'
-            });
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+          }).then(() => {
+              updateStatus(row.id, {status: row.status}).then(response => {
+                  this.$message({
+                      type: 'success',
+                      message: '修改成功!'
+                  });
+              });
+          }).catch(() => {
+              this.$message({
+                  type: 'info',
+                  message: '取消修改'
+              });
+              this.getList();
           });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '取消修改'
-          });
-          this.getList();
-        });
       },
       handleDelete(index, row) {
         this.$confirm('是否要删除该活动?', '提示', {

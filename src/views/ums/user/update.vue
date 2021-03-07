@@ -17,6 +17,22 @@
           </el-form-item>
         </el-col>
       </el-row>
+      <el-row type="flex" v-if="routeParams.isAdd" class="row-bg" justify="center">
+        <el-col :span="15">
+          <el-form-item label="密码：" prop="password" required>
+            <el-input
+              v-model.trim="dataForm.password" type="password"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row type="flex" v-if="routeParams.isAdd" class="row-bg" justify="center">
+        <el-col :span="15">
+          <el-form-item label="确认密码：" prop="newPassword" required>
+            <el-input
+              v-model.trim="dataForm.newPassword" type="password"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
       <el-row type="flex" class="row-bg" justify="center">
         <el-col :span="15">
           <el-form-item label="手机号码：" prop="phone">
@@ -86,6 +102,7 @@
             return {
                 routeParams:{
                     readonly:true,
+                    isAdd:false,
                     id:'',
                 },
                 formName: 'dataForm',
@@ -95,7 +112,9 @@
                     phone: '', //手机号码
                     nickName: '', //名称
                     note: '', //备注
-                    status:''//账号状态
+                    status:'',//账号状态
+                    password:'',
+                    newPassword:'',
                 },
                 rules: {
                     status: [{required: true, message: '请选择状态'}],
@@ -146,6 +165,14 @@
                         this.loading = false
                     })
                 }else{
+                    if(this.dataForm.password.length < 6){
+                        this.$message.error('密码不得小于六位数!');
+                        return;
+                    }
+                    if(this.dataForm.password != this.dataForm.newPassword){
+                        this.$message.error('两次填写密码不一致!');
+                        return;
+                    }
                     register(this.dataForm).then(res => {
                         if (res.code === 0) {
                             this.$message.success(res.msg);

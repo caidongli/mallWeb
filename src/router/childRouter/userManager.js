@@ -13,10 +13,17 @@ const product = [
     hidden: true
   },
   {
-    path: 'addProduct',
-    name: 'addProduct',
+    path: 'roleList',
+    name: 'roleList',
     component: () => import('@/views/ums/role/index'),
     meta: {title: '角色列表', icon: 'product-add'}
+  },
+  {
+    path: 'roleEdit',
+    name: 'roleEdit',
+    component: () => import('@/views/ums/role/update'),
+    meta: {title: '角色编辑', icon: 'product-edit'},
+    hidden: true
   },
  /* {
     path: 'updateProduct',

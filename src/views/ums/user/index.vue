@@ -32,25 +32,25 @@
       <span>数据列表</span>
       <el-button
         class="btn-add"
-        @click="addUser(false)"
+        @click="addUser(false,true)"
         size="mini">
         添加
       </el-button>
     </el-card>
     <div class="table-container">
       <el-table :data="tableData" border stripe>
-        <!--        <el-table-column hidden type="index" label="序号" ></el-table-column>-->
-        <el-table-column prop="username" label="用户名" ></el-table-column>
+        <el-table-column label="序号" type="index" header-align="center" align="center"></el-table-column>
+        <el-table-column prop="username" label="用户名" >
+          <template slot-scope="scope">
+            <span class="span-text" @click="userShow(scope.$index, scope.row,true)">{{scope.row.username}}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="phone" label="手机号" ></el-table-column>
         <el-table-column prop="email" label="邮箱" ></el-table-column>
         <el-table-column prop="nickName" label="姓名"></el-table-column>
         <el-table-column label="操作" width="360" align="center">
           <template slot-scope="scope">
             <p>
-              <el-button
-                size="mini"
-                @click="userShow(scope.$index, scope.row,true)">查看
-              </el-button>
               <el-button
                 size="mini"
                 @click="userUpdate(scope.$index, scope.row,false)">编辑
@@ -143,14 +143,14 @@
                     this.loading = false
                 })
             },
-            addUser(readonly){
-                this.$router.push({name:'userEdit',params:{readonly: readonly}});
+            addUser(readonly,isAdd){
+                this.$router.push({name:'userEdit',params:{readonly: readonly,isAdd:isAdd}});
             },
             userShow(index,row,readonly){
-                this.$router.push({name:'userEdit',params:{id:row.id,readonly: readonly}});
+                this.$router.push({name:'userEdit',params:{id:row.id,readonly: readonly,isAdd: false}});
             },
             userUpdate(index,row,readonly){
-                this.$router.push({name:'userEdit',params:{id:row.id,readonly: readonly}});
+                this.$router.push({name:'userEdit',params:{id:row.id,readonly: readonly,isAdd: false}});
             },
             chooseUserRole(row){
                 this.params.userId = row.id;

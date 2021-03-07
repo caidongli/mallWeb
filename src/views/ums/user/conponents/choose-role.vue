@@ -61,7 +61,6 @@
                 searchFormData: {
                     queryName: '',
                 },
-                check:'1',
             }
         },
         methods: {
