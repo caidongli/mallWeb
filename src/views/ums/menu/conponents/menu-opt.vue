@@ -5,13 +5,15 @@
     :close-on-click-modal="false"
     :close-on-press-escape="false"
     :before-close="()=>closeDialog('close')"
-    width="750px"
+    width="650px"
   >
     <el-row >
-      <el-button type="primary" @click="closeDialog('add')">新增</el-button>
-      <el-button type="primary" @click="closeDialog('update')">修改</el-button>
-      <el-button type="primary" @click="closeDialog('view')">查看</el-button>
-      <el-button type="danger" @click="closeDialog('del')">删除</el-button>
+      <el-col :offset="3" >
+      <el-button type="primary" @click="closeDialog('add')">新增菜单</el-button>
+      <el-button type="primary" @click="closeDialog('update')">修改菜单</el-button>
+      <el-button type="primary" @click="closeDialog('view')">查看菜单</el-button>
+      <el-button type="danger" @click="closeDialog('del')">删除菜单</el-button>
+      </el-col>
     </el-row>
   </el-dialog>
 </template>
@@ -25,7 +27,8 @@
     },
     methods: {
       closeDialog(opt) {
-        this.$emit('closeOptDialog', opt,this.id);
+          let id = this.id;
+        this.$emit('closeOptDialog', {opt,id});
       },
     },
     watch: {
@@ -37,7 +40,7 @@
         default: false
       },
       id: {
-        type: String,
+        type: Number,
         default: "",
       },
     }
