@@ -38,7 +38,6 @@ export default {
   methods:{
     getRoutes(){
       this.routes = this.$router.options.routes
-      console.log(this.routes)
     },
   },
   async mounted() {

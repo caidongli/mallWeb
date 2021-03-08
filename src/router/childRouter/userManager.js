@@ -25,6 +25,12 @@ const product = [
     meta: {title: '角色编辑', icon: 'product-edit'},
     hidden: true
   },
+  {
+    path: 'menuIndex',
+    name: 'menuIndex',
+    component: () => import('@/views/ums/menu/index'),
+    meta: {title: '菜单管理', icon: 'product-edit'},
+  },
  /* {
     path: 'updateProduct',
     name: 'updateProduct',
