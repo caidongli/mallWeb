@@ -5,20 +5,19 @@
     :close-on-click-modal="false"
     :close-on-press-escape="false"
     :before-close="()=>closeDialogInfo('close')"
-    width="650px"
+    width="1000px"
   >
   <div>
-    <h1 style="text-align:center;">菜单信息</h1>
     <el-form
-      :disabled="routeParams.readonly"
+      :disabled="params.readonly"
       :model="dataForm"
       :ref="formName"
       :rules="rules"
       label-position="right"
       label-width="160px"
     >
-      <el-row type="flex" class="row-bg" justify="center">
-        <el-col :span="8" :offset="3">
+      <el-row type="flex" class="row-bg">
+        <el-col :span="8">
           <el-form-item label="名称：" prop="name">
             <el-input
               v-model.trim="dataForm.name"></el-input>
@@ -31,8 +30,8 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row type="flex" class="row-bg" justify="center">
-        <el-col :span="8" :offset="3">
+      <el-row type="flex" class="row-bg" >
+        <el-col :span="8">
           <el-form-item label="排序：" prop="orderBy">
             <el-input
               v-model.trim="dataForm.orderBy"></el-input>
@@ -47,10 +46,10 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row type="flex" class="row-bg" justify="center">
-        <el-col :span="8" :offset="3">
-          <el-form-item label="是否启用：" prop="isUser" required>
-            <el-radio-group v-model="dataForm.isUser">
+      <el-row type="flex" class="row-bg">
+        <el-col :span="8">
+          <el-form-item label="是否启用：" prop="isUsed" required>
+            <el-radio-group v-model="dataForm.isUsed">
               <el-radio :label='"1"'>启用</el-radio>
               <el-radio :label='"0"'>禁用</el-radio>
             </el-radio-group>
@@ -65,8 +64,16 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row type="flex" class="row-bg" justify="center">
-        <el-col :span="15">
+      <el-row type="flex" class="row-bg">
+        <el-col :span="8">
+          <el-form-item label="系统：" prop="platForm">
+            <el-input
+              v-model.trim="dataForm.platForm"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row type="flex" class="row-bg">
+        <el-col :span="19">
           <el-form-item label="备注：">
             <el-input
               v-model.trim="dataForm.remark"></el-input>
@@ -75,12 +82,12 @@
       </el-row>
     </el-form>
     <!--底部操作按钮-->
-    <el-row>
+    <el-row justify="right">
       <el-col :offset="18" :span="6">
-        <el-button @click="updateUserBySuper" v-show="!routeParams.readonly">
+        <el-button @click="updateUserBySuper" v-show="!params.readonly">
           保存
         </el-button>
-        <el-button @click="goBack" >
+        <el-button @click="closeDialogInfo('close')" >
           返回
         </el-button>
       </el-col>
@@ -90,50 +97,88 @@
 </template>
 
 <script>
-    import { queryMenuList,queryMenuInfo,addMenu,updateMenu,deleteMenu } from '@/api/menu'
+    import { queryMenuInfo,addMenu,updateMenu } from '@/api/menu'
 
     export default {
         name: 'menuEdit',
         data() {
             return {
-                routeParams:{
-                    readonly:true,
-                    id:'',
-                },
                 formName: 'dataForm',
+                params:{
+                    readonly:true,
+                },
                 dataForm: {
                     name: '', //名称
                     status: '', //状态
                     url: '', //路由
-                    isUser: '', //是否启用
+                    isUsed: '', //是否启用
                     isHidden: '', //是否隐藏
                     remark:'',//备注
-                    orderBy:''//排序
+                    orderBy:'',//排序
+                    platForm:'',//系统
+                    parentId:'',//父ID
                 },
                 rules: {
                     status: [{required: true, message: '请选择状态'}],
                     isHidden: [{required: true, message: '请选择隐藏状态'}],
-                    isUser: [{required: true, message: '请选择启用状态'}],
+                    isUsed: [{required: true, message: '请选择启用状态'}],
                     name: [{required: true, message: '名称不能为空'}],
                     url: [{required: true, message: '路由不能为空'}],
+                    platForm: [{required: true, message: '系统不能为空'}],
                     orderBy: [{required: true, message: '排序不能为空'}],
                 }
             };
         },
         methods: {
             loadData() {
-                if(this.routeParams.id != null && this.routeParams.id != ''){
+                if(this.opt != 'add'){
+                    queryMenuInfo({id:this.id}).then(res => {
+                        if (res.code === 0) {
+                            console.log(this.dataForm)
+                            this.dataForm = res.data;
+                        }else {
+                            this.$message.error(res.msg);
+                        }
+                    }).catch(() => {
+                        this.$message.error('请求错误!');
+                        this.loading = false
+                    })
                 }
             },
             closeDialogInfo(opt) {
-                let id = this.id;
-                this.$emit('closeDialogInfo', {opt,id});
+                this.$emit('closeDialogInfo', opt);
             },
             resetForm() {
                 this.$refs[this.formName].resetFields();
             },
             updateUserBySuper(){
-
+                if(this.opt != 'add'){
+                    this.dataForm.parentId = '';
+                    updateMenu(this.dataForm).then(res => {
+                        if (res.code === 0) {
+                            this.$message.success(res.msg);
+                            this.closeDialogInfo(this.opt);
+                        }else {
+                            this.$message.error(res.msg);
+                        }
+                    }).catch(() => {
+                        this.$message.error('请求错误!');
+                        this.loading = false
+                    })
+                }else{
+                    this.dataForm.parentId = this.id;
+                    addMenu(this.dataForm).then(res => {
+                        if (res.code === 0) {
+                            this.$message.success(res.msg);
+                            this.closeDialogInfo(this.opt);
+                        }else {
+                            this.$message.error(res.msg);
+                        }
+                    }).catch(() => {
+                        this.$message.error('请求错误!');
+                        this.loading = false
+                    })
+                }
             },
             goBack() {
                 this.$router.go(-1);
@@ -142,8 +187,9 @@
         watch: {
             reload: function (newVal, oldVal) {
                 if (newVal) {
-                    this.selection = true;
-                    this.loadData(true);
+                    this.dataForm = {};
+                    this.params.readonly = this.readonly;
+                    this.loadData();
                 }
             },
         },
@@ -160,6 +206,14 @@
             reload: {
                 type: String,
                 default: "",
+            },
+            opt: {
+                type: String,
+                default: "",
+            },
+            readonly:{
+                type: Boolean,
+                default: false
             },
         }
     }
