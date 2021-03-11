@@ -108,6 +108,7 @@
                     readonly:true,
                 },
                 dataForm: {
+                    id:'',
                     name: '', //名称
                     status: '', //状态
                     url: '', //路由
