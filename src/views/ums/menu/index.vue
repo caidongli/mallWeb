@@ -28,7 +28,7 @@
 </template>
 
 <script>
-    import { queryMenuList,queryMenuInfo,addMenu,updateMenu,deleteMenu } from '@/api/menu'
+    import { queryMenuList,deleteMenu } from '@/api/menu'
     import menuOpt from './conponents/menu-opt'
     import menuEdit from './conponents/menu-update'
     export default {
@@ -70,6 +70,20 @@
                 this.openDialogOpt = false;
             },
             dealOpt(obj){
+              if(obj.opt === 'del'){
+                deleteMenu({id:obj.id}).then(res => {
+                  if (res.code === 0) {
+                    this.$message.success(res.msg);
+                    this.loadData();
+                  }else{
+                    this.$message.error(res.msg);
+                  }
+                }).catch(() => {
+                  this.$message.error('请求错误!');
+                  this.loading = false
+                })
+                return;
+              }
                 this.openDialogInfo = true;
                 this.reload = new Date().toLocaleString();
                 this.opt = obj.opt
@@ -90,8 +104,8 @@
                 this.openDialogInfo = false;
             },
             handleDrop(draggingNode, dropNode, dropType, ev) {
-                console.log('draggingNode drop: ', draggingNode.label);
-                console.log('tree drop: ', dropNode.label, dropType);
+                console.log('draggingNode drop: ',draggingNode.data.id,dropNode.data.parentId);
+                console.log('tree drop: ',dropNode.data.id,dropNode.label, dropType);
             },
             handleContextmenu(ev,node){
                 this.id = node.id
