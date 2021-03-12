@@ -11,3 +11,9 @@ export const addMenu = data => ajax('/admin/sysMenu/addMenu', data, 'POST',JSON)
 export const deleteMenuBatch = data => ajax('/admin/sysMenu/deleteMenuBatch', data, 'POST',JSON);
 
 export const updateMenu = data => ajax('/admin/sysMenu/updateMenu', data, 'POST',JSON);
+
+export const queryMenuTree = data => ajax('/admin/sysMenu/queryMenuTree', data, 'POST',JSON);
+
+export const queryMenuListByU = data => ajax('/admin/sysMenu/queryMenuListByU', data, 'POST',JSON);
+
+export const queryMenuListByPlatForm = data => ajax('/admin/sysMenu/queryMenuListByPlatForm', data, 'POST',JSON);

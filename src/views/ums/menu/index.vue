@@ -45,7 +45,7 @@
                 data: [],
                 defaultProps: {
                     children: 'childList',
-                    label: 'name'
+                    label: 'title'
                 },
                 dataForm: {
                     id:'',
@@ -114,10 +114,10 @@
                     this.dataForm.parentId = dropNode.data.id
                 }else if(dropType == 'before'){
                     this.dataForm.parentId = dropNode.data.parentId
-                    this.dataForm.orderBy = dropNode.data.orderBy*1+"0.1"*1
+                    this.dataForm.orderBy = dropNode.data.orderBy*1-"0.1"*1
                 }else if(dropType == 'after'){
                     this.dataForm.parentId = dropNode.data.parentId
-                    this.dataForm.orderBy = dropNode.data.orderBy*1-"0.1"*1
+                    this.dataForm.orderBy = dropNode.data.orderBy*1+"0.1"*1
                 }
                 updateMenu(this.dataForm).then(res => {
                     if (res.code === 0) {

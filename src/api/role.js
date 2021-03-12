@@ -14,7 +14,8 @@ export const deleteRoleBatch = data => ajax('/admin/role/deleteRoleBatch', data,
 
 export const updatePermissionRelation = data => ajax('/admin/role/updatePermissionRelation', data, 'POST',JSON);
 
+export const updateMenuRelationBatch = data => ajax('/admin/role/updateMenuRelationBatch', data, 'POST',JSON);
+
 export const updatePermissionRelationBatch = data => ajax('/admin/role/updatePermissionRelationBatch', data, 'POST',JSON);
 
 export const queryPermissionTree = data => ajax('/admin/permission/queryPermissionTree', data, 'POST',JSON);
-

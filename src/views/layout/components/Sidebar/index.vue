@@ -9,7 +9,7 @@
       text-color="#bfcbd9"
       active-text-color="#409EFF"
     >
-      <sidebar-item :routes="routes"></sidebar-item>
+      <sidebar-item :menus="menus"></sidebar-item>
     </el-menu>
   </scroll-bar>
 </template>
@@ -18,12 +18,12 @@
 import { mapGetters } from 'vuex'
 import SidebarItem from './SidebarItem'
 import ScrollBar from '@/components/ScrollBar'
+import { queryMenuListByU } from '@/api/menu'
 
 export default {
   data() {
     return {
-      userId:'',
-      routes:[],
+      menus:[],
     }
   },
   components: { SidebarItem, ScrollBar },
@@ -36,14 +36,19 @@ export default {
     }
   },
   methods:{
-    getRoutes(){
-      this.routes = this.$router.options.routes
+    getMenus(){
+      queryMenuListByU().then(res => {
+        if (res.code === 0) {
+          this.menus = res.data;
+          console.log(this.menus)
+        }
+      }).catch(() => {
+        this.$message.error('獲取菜單错误!');
+      })
     },
   },
   async mounted() {
-    let param = JSON.parse(this.commonJs.getStore(this.constants.userInfo));
-    this.userId = param.id;
-    this.getRoutes();
+    this.getMenus();
   },
   beforeCreate() {
     this.commonJs.parseCurrentPageParams(this);

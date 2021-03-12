@@ -18,15 +18,29 @@
     >
       <el-row type="flex" class="row-bg">
         <el-col :span="8">
-          <el-form-item label="名称：" prop="name">
+          <el-form-item label="组件名称：" prop="name">
             <el-input
               v-model.trim="dataForm.name"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="8" :offset="3">
-          <el-form-item label="路由：" prop="url">
+          <el-form-item label="组件路由：" prop="path">
             <el-input
-              v-model.trim="dataForm.url"></el-input>
+              v-model.trim="dataForm.path"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row type="flex" class="row-bg">
+        <el-col :span="8">
+          <el-form-item label="菜单名称：" prop="title">
+            <el-input
+              v-model.trim="dataForm.title"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="8" :offset="3">
+          <el-form-item label="系统：" prop="platForm">
+            <el-input
+              v-model.trim="dataForm.platForm"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -66,9 +80,15 @@
       </el-row>
       <el-row type="flex" class="row-bg">
         <el-col :span="8">
-          <el-form-item label="系统：" prop="platForm">
+          <el-form-item label="URL">
             <el-input
-              v-model.trim="dataForm.platForm"></el-input>
+              v-model.trim="dataForm.url"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="8" :offset="3">
+          <el-form-item label="菜单图片：">
+            <el-input
+              v-model.trim="dataForm.icon"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -111,20 +131,24 @@
                     id:'',
                     name: '', //名称
                     status: '', //状态
-                    url: '', //路由
+                     path:'', //路由
+                    url: '', //url
+                  icon:'', //菜单图片
                     isUsed: '', //是否启用
                     isHidden: '', //是否隐藏
                     remark:'',//备注
                     orderBy:'',//排序
                     platForm:'',//系统
+                  title:'', //菜单名称
                     parentId:'',//父ID
                 },
                 rules: {
                     status: [{required: true, message: '请选择状态'}],
                     isHidden: [{required: true, message: '请选择隐藏状态'}],
                     isUsed: [{required: true, message: '请选择启用状态'}],
-                    name: [{required: true, message: '名称不能为空'}],
-                    url: [{required: true, message: '路由不能为空'}],
+                    name: [{required: true, message: '组件名称不能为空'}],
+                    path: [{required: true, message: '组件路由不能为空'}],
+                   title: [{required: true, message: '菜单名称不能为空'}],
                     platForm: [{required: true, message: '系统不能为空'}],
                     orderBy: [{required: true, message: '排序不能为空'}],
                 }
