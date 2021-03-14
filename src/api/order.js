@@ -1,63 +1,22 @@
-import request from '@/utils/request'
-export function fetchList(params) {
-  return request({
-    url:'/order/list',
-    method:'get',
-    params:params
-  })
-}
+import ajax from '@/utils/ajax'
 
-export function closeOrder(params) {
-  return request({
-    url:'/order/update/close',
-    method:'post',
-    params:params
-  })
-}
+export const saveOrUpdateOrder = data => ajax('/admin/order/saveOrUpdateOrder', data, 'POST',JSON);
 
-export function deleteOrder(params) {
-  return request({
-    url:'/order/delete',
-    method:'post',
-    params:params
-  })
-}
+export const queryOrderList = data => ajax('/admin/order/queryOrderList', data, 'POST',JSON);
 
-export function deliveryOrder(data) {
-  return request({
-    url:'/order/update/delivery',
-    method:'post',
-    data:data
-  });
-}
+export const delOrderBatch = data => ajax('/admin/order/delOrderBatch', data, 'POST',JSON);
 
-export function getOrderDetail(id) {
-  return request({
-    url:'/order/'+id,
-    method:'get'
-  });
-}
+export const delOrder = data => ajax('/admin/order/delOrder', data, 'POST',JSON);
 
-export function updateReceiverInfo(data) {
-  return request({
-    url:'/order/update/receiverInfo',
-    method:'post',
-    data:data
-  });
-}
+export const updateGoods = data => ajax('/admin/order/updateGoods', data, 'POST',JSON);
 
-export function updateMoneyInfo(data) {
-  return request({
-    url:'/order/update/moneyInfo',
-    method:'post',
-    data:data
-  });
-}
+export const delGoods = data => ajax('/admin/order/delGoods', data, 'POST',JSON);
 
-export function updateOrderNote(params) {
-  return request({
-    url:'/order/update/note',
-    method:'post',
-    params:params
-  })
-}
+export const delGoodsBatch = data => ajax('/admin/order/delGoodsBatch', data, 'POST',JSON);
+
+export const queryOrderGoodsList = data => ajax('/admin/order/queryOrderGoodsList', data, 'POST',JSON);
+
+export const getOrderInfo = data => ajax('/admin/order/getOrderInfo', data, 'POST',JSON);
+
+export const queryOrderGoods = data => ajax('/admin/order/queryOrderGoods', data, 'POST',JSON);
+

@@ -46,16 +46,6 @@ export const constantRouterMap = [
     ]
   },
   {
-    path: '/pms',
-    component: Layout,
-    redirect: '/pms/product',
-    name: 'pms',
-    meta: {title: '商品', icon: 'product'},
-    children: [
-      ...product,
-    ]
-  },
-  {
     path: '/oms',
     component: Layout,
     redirect: '/oms/order',
@@ -63,6 +53,16 @@ export const constantRouterMap = [
     meta: {title: '订单', icon: 'order'},
     children: [
       ...order
+    ]
+  },
+  {
+    path: '/pms',
+    component: Layout,
+    redirect: '/pms/product',
+    name: 'pms',
+    meta: {title: '商品', icon: 'product'},
+    children: [
+      ...product,
     ]
   },
   {

@@ -7,6 +7,7 @@
         :props="defaultProps"
         @node-contextmenu="handleContextmenu"
         @node-drop="handleDrop"
+        :default-expanded-keys="expandedData"
         draggable
       >
       </el-tree>
@@ -43,6 +44,7 @@
                 reload:'',
                 openDialogInfo:false,
                 data: [],
+                expandedData:[],//默认展开的数据
                 defaultProps: {
                     children: 'childList',
                     label: 'title'
@@ -62,11 +64,26 @@
                 queryMenuList().then(res => {
                     if (res.code === 0) {
                         this.data = res.data
+                        this.dealData(this.data)
                     }
                 }).catch(() => {
                     this.$message.error('请求错误!');
                     this.loading = false
                 })
+            },
+            dealData(list){
+                if (list && list.length > 0) {
+                    // 循环遍历
+                    for (let i = 0; i < list.length; i++) {
+                        if(list[i].parentId == '0' || list[i].parentId == '-1'){
+                            this.expandedData.push(list[i].id);
+                        }
+                        // 如果数组中有childList则继续递归
+                        if (list[i].childList) {
+                            this.dealData(list[i].childList);
+                        }
+                    }
+                }
             },
             closeOptDialog(obj){
                 if(obj.opt != 'close'){

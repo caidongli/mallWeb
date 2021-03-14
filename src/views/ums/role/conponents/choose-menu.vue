@@ -73,10 +73,10 @@
         if (list && list.length > 0) {
           // 循环遍历
           for (let i = 0; i < list.length; i++) {
-            if(list[i].parentId == '0'){
+            if(list[i].parentId == '0' || list[i].parentId == '-1'){
               this.expandedData.push(list[i].id);
             }
-            if(list[i].status == '1' && list[i].parentId != '0'){
+            if(list[i].status == '1' && list[i].parentId != '0' && list[i].parentId != '-1'){
               this.checkedData.push(list[i].id);
             }
             // 如果数组中有childList则继续递归
