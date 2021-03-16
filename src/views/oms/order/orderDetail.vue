@@ -13,39 +13,39 @@
             <span>基本信息</span>
           </div>
         <el-row type="flex" class="row-bg">
-          <el-col :span="8">
+          <el-col :span="6" :offset="2">
             <el-form-item label="客户名称：" prop="customer">
               <el-input
                 v-model.trim="dataForm.customer"></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="8" :offset="3">
+          <el-col :span="6" :offset="3">
             <el-form-item label="订货日期:" prop="orderDate" required>
               <el-date-picker type="datetime" v-model="dataForm.orderDate" :value-format="valueFormat"></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row type="flex" class="row-bg">
-          <el-col :span="8">
+          <el-col :span="6" :offset="2">
             <el-form-item label="电话：" prop="telephone">
               <el-input
                 v-model.trim="dataForm.telephone"></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="8" :offset="3">
+          <el-col :span="6" :offset="3">
             <el-form-item label="预交货时间:" prop="preDeliveryData" required>
               <el-date-picker type="datetime" v-model="dataForm.preDeliveryData" :value-format="valueFormat"></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row type="flex" class="row-bg" >
-          <el-col :span="8">
+          <el-col :span="6" :offset="2">
             <el-form-item label="设计师：" prop="designer">
               <el-input
                 v-model.trim="dataForm.designer"></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="8" :offset="3">
+          <el-col :span="6" :offset="3">
             <el-form-item label="销售人员：" prop="salesman">
               <el-input
                 v-model.trim="dataForm.salesman"></el-input>
@@ -53,46 +53,27 @@
           </el-col>
         </el-row>
         <el-row type="flex" class="row-bg" >
-          <el-col :span="8">
+          <el-col :span="6" :offset="2">
             <el-form-item label="支付方式：" prop="payWay">
               <el-input
                 v-model.trim="dataForm.payWay"></el-input>
             </el-form-item>
           </el-col>
+          <el-col :span="6" :offset="3">
+            <el-form-item label="合计金额：" prop="totalAmount">
+              <el-input
+                v-model.trim="dataForm.totalAmount"></el-input>
+            </el-form-item>
+          </el-col>
         </el-row>
-          <el-row type="flex" class="row-bg" >
-            <el-col>
-              <el-form-item label="地址：" prop="address">
-                <el-input type="textarea" v-model="dataForm.address"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row type="flex" class="row-bg" >
-            <el-col>
-          <el-form-item label="备注：">
-            <el-input type="textarea" v-model="dataForm.remark"></el-input>
-          </el-form-item>
-            </el-col>
-          </el-row>
-        </el-card>
-        <el-card class="filter-container" shadow="never">
-          <div>
-            <span>金额信息</span>
-          </div>
           <el-row type="flex" class="row-bg">
-            <el-col :span="6">
-              <el-form-item label="合计金额：" prop="totalAmount">
-                <el-input
-                  v-model.trim="dataForm.totalAmount"></el-input>
-              </el-form-item>
-            </el-col>
             <el-col :span="6" :offset="2">
               <el-form-item label="折扣：">
                 <el-input
                   v-model.trim="dataForm.discount" @input="clateReceivableAmount()"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="6" :offset="2">
+            <el-col :span="6" :offset="3">
               <el-form-item label="应收金额：" prop="receivableAmount">
                 <el-input
                   v-model.trim="dataForm.receivableAmount" @input="clateDiscount()"></el-input>
@@ -100,18 +81,20 @@
             </el-col>
           </el-row>
           <el-row type="flex" class="row-bg">
-            <el-col :span="6">
+            <el-col :span="6" :offset="2">
               <el-form-item label="预收金额：" prop="preReceivableAmount">
                 <el-input
                   v-model.trim="dataForm.preReceivableAmount" @input="clatepreReceivableAmount()"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="6" :offset="2">
+            <el-col :span="6" :offset="3">
               <el-form-item label="预收款比例(%)：" prop="preReceivableRatio">
                 <el-input
                   v-model.trim="dataForm.preReceivableRatio"></el-input>
               </el-form-item>
             </el-col>
+          </el-row>
+          <el-row type="flex" class="row-bg">
             <el-col :span="6" :offset="2">
               <el-form-item label="补交金额：" prop="repayAmount">
                 <el-input
@@ -119,7 +102,23 @@
               </el-form-item>
             </el-col>
           </el-row>
+          <el-row type="flex" class="row-bg" >
+            <el-col :span="15" :offset="2">
+              <el-form-item label="地址：" prop="address">
+                <el-input type="textarea" v-model="dataForm.address"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row type="flex" class="row-bg" >
+            <el-col :span="15" :offset="2">
+          <el-form-item label="备注：">
+            <el-input type="textarea" v-model="dataForm.remark"></el-input>
+          </el-form-item>
+            </el-col>
+          </el-row>
         </el-card>
+
+
       </el-form>
       <el-card class="filter-container" shadow="never">
         <el-collapse v-model="activeNames">
