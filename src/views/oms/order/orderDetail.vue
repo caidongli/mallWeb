@@ -6,7 +6,7 @@
         :ref="formName"
         :rules="rules"
         label-position="right"
-        label-width="160px"
+        label-width="130px"
       >
         <el-card class="filter-container" shadow="never">
           <div>
@@ -103,8 +103,58 @@
             </el-col>
           </el-row>
           <el-row type="flex" class="row-bg" >
+            <el-col :span="4" :offset="2">
+              <el-form-item label="省：" prop="repayAmount">
+                <el-select v-model="dataForm.province" clearable placeholder="请选择" @change="handleProvinceChange">
+                  <el-option
+                    v-for="item in provinceOptions"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.code">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4" >
+              <el-form-item label="市：" prop="repayAmount">
+                <el-select v-model="dataForm.city" clearable placeholder="请选择" @change="handleCityChange">
+                  <el-option
+                    v-for="item in cityOptions"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.code">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4" >
+              <el-form-item label="区：" prop="repayAmount">
+                <el-select v-model="dataForm.area" clearable placeholder="请选择" @change="handleAreaChange">
+                  <el-option
+                    v-for="item in areaOptions"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.code">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4" >
+              <el-form-item label="街道：" prop="repayAmount">
+                <el-select v-model="dataForm.town" clearable placeholder="请选择" @change="$forceUpdate()">
+                  <el-option
+                    v-for="item in townOptions"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.code">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row type="flex" class="row-bg" >
             <el-col :span="15" :offset="2">
-              <el-form-item label="地址：" prop="address">
+              <el-form-item label="详细地址：" prop="address">
                 <el-input type="textarea" v-model="dataForm.address"></el-input>
               </el-form-item>
             </el-col>
@@ -182,7 +232,7 @@
 </template>
 
 <script>
-    import { delGoods,updateGoods,saveOrUpdateOrder,queryOrderGoodsList,delGoodsBatch,getOrderInfo,queryOrderGoods } from '@/api/order'
+    import { delGoods,updateGoods,saveOrUpdateOrder,queryOrderGoodsList,delGoodsBatch,getOrderInfo,queryOrderGoods,getAddress } from '@/api/order'
     import {isPhone, isMobile} from '@/utils/validate'
     import {current_page_params} from '@/utils/constant'
     export default {
@@ -213,10 +263,18 @@
                     orderId:'',
                     goodsName:'',
                 },
+                provinceOptions:[],
+                cityOptions:[],
+                areaOptions:[],
+                townOptions:[],
                 dataForm: {
                     id:'',
                     customer:'',
                     orderDate:'',
+                    province:'',
+                    city:'',
+                    area:'',
+                    town:'',
                     address:'',
                     telephone:'',
                     preDeliveryData:'',
@@ -275,6 +333,18 @@
                     })
                 }
             },
+            loadAddress(){
+                getAddress({type:'province'}).then(res => {
+                    if (res.code === 0) {
+                        this.provinceOptions = res.data;
+                    }else {
+                        this.$message.error(res.msg);
+                    }
+                }).catch(() => {
+                    this.$message.error('请求错误!');
+                    this.loading = false
+                })
+            },
             loadTableData(id){
                 this.searchFormData.orderId = id;
                 queryOrderGoodsList(this.searchFormData).then(res => {
@@ -323,10 +393,64 @@
             goBack() {
                 this.$router.go(-1);
             },
+            handleProvinceChange(value){
+                getAddress({type:'city',code:value}).then(res => {
+                    if (res.code === 0) {
+                        this.cityOptions = res.data;
+                        this.areaOptions = [];
+                        this.townOptions = [];
+                    }else {
+                        this.cityOptions = [];
+                        this.$message.error(res.msg);
+                    }
+                    this.dataForm.city = '';
+                    this.dataForm.area = '';
+                    this.dataForm.town = '';
+                }).catch(() => {
+                    this.$message.error('请求错误!');
+                    this.loading = false
+                })
+                /*let label = this.provinceOptions.find((item)=> {
+                    return item.code === value;
+                })
+                console.log(label)*/
+            },
+            handleCityChange(value){
+                getAddress({type:'area',code:value}).then(res => {
+                    if (res.code === 0) {
+                        this.areaOptions = res.data;
+                        this.townOptions = [];
+                    }else {
+                        this.areaOptions = [];
+                        this.townOptions = [];
+                        this.$message.error(res.msg);
+                    }
+                    this.dataForm.area = '';
+                    this.dataForm.town = '';
+                }).catch(() => {
+                    this.$message.error('请求错误!');
+                    this.loading = false
+                })
+            },
+            handleAreaChange(value){
+                getAddress({type:'town',code:value}).then(res => {
+                    if (res.code === 0) {
+                        this.townOptions = res.data;
+                    }else {
+                        this.townOptions = [];
+                        this.$message.error(res.msg);
+                    }
+                    this.dataForm.town = '';
+                }).catch(() => {
+                    this.$message.error('请求错误!');
+                    this.loading = false
+                })
+            },
             async mounted() {
                 this.routeParams = JSON.parse(this.commonJs.getStore(current_page_params));
                 console.log(this.routeParams)
                 this.loadData();
+                this.loadAddress();
             },
         },
         watch: {
