@@ -118,12 +118,19 @@
         :total="this.total"
       ></el-pagination>
     </div>
+    <chooseAddress
+      :openDialogChoose="openDialogChoose"
+      :reload="this.reload"
+      @closeOpenDialog="closeOpenDialog"
+    ></chooseAddress>
   </div>
 </template>
 <script>
+    import chooseAddress from './components/choose-address'
     import { delOrder,queryOrderList } from '@/api/order'
     export default {
         name: "orderList",
+        components: {chooseAddress},
         props:{
             valueFormat: {
                 type: String,
@@ -137,6 +144,8 @@
                 total: 0,
                 activeNames: [],
                 tableData: [], //表格数据
+                openDialogChoose: false,
+                reload:'',
                 searchFormData: {
                     customer: '',
                     designer:'',
@@ -150,11 +159,6 @@
                     preDeliveryDataInfo:[],
                     pageNum:1,
                     pageSize: 10,
-                },
-                openDialogChoose: false,
-                params:{
-                    userId:'',
-                    reload:'',
                 },
                 pickerOptions: {
                     shortcuts: [{
@@ -224,7 +228,18 @@
                 })
             },
             addOrder(readonly,isAdd){
-                this.$router.push({name:'orderDetail',params:{readonly: readonly,isAdd:isAdd}});
+                this.$confirm('是否选择开发商？', '选择信息', {
+                    distinguishCancelAndClose: true,
+                    confirmButtonText: '是',
+                    cancelButtonText: '否'
+                })
+                    .then(() => {
+                        this.reload = new Date().toLocaleString();
+                        this.openDialogChoose = true
+                    })
+                    .catch(action => {
+                        this.$router.push({name:'orderDetail',params:{readonly: readonly,isAdd:isAdd}});
+                    });
             },
             orderShow(index,row,readonly){
                 this.$router.push({name:'orderDetail',params:{id:row.id,readonly: readonly,isAdd: false}});
@@ -233,14 +248,22 @@
                 this.$router.push({name:'orderDetail',params:{id:row.id,readonly: readonly,isAdd: false}});
             },
             orderDelete(index,row){
-                delOrder({id:row.id}).then(res => {
-                    if (res.code === 0) {
-                        this.loadData();
-                    }
-                }).catch(() => {
-                    this.$message.error('请求错误!');
-                    this.loading = false
-                })
+                this.$confirm('确认删除？', '警告', {type: "warning"})
+                    .then(async () => {
+                        delOrder({id:row.id}).then(res => {
+                            if (res.code === 0) {
+                                this.loadData();
+                            }
+                        }).catch(() => {
+                            this.$message.error('请求错误!');
+                            this.loading = false
+                        })
+                    })
+                    .catch(() => {
+                    })
+            },
+            closeOpenDialog(){
+                this.openDialogChoose = false
             },
             handleResetSearch(){
                 this.searchFormData.customer = '';
