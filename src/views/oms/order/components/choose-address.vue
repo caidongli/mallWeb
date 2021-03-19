@@ -106,7 +106,7 @@
                 })
             },
             add(index,row,readonly){
-                this.$router.push({name:'orderDetail',params:{addressId:row.id,readonly: readonly,isAdd: false}});
+                this.$router.push({name:'orderUpdate',params:{addressId:row.id,readonly: readonly,isAdd: false}});
             },
         },
         watch: {

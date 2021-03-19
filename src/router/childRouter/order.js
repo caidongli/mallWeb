@@ -13,6 +13,13 @@ const order = [
     hidden:true
   },
   {
+    path: 'orderUpdate',
+    name: 'orderUpdate',
+    component: () => import('@/views/oms/order/update'),
+    meta: {title: '订单详情'},
+    hidden:true
+  },
+  {
     path: 'orderAddress',
     name: 'orderAddress',
     component: () => import('@/views/oms/orderAddress/index'),
@@ -25,6 +32,7 @@ const order = [
     meta: {title: '开发商地址详情'},
     hidden:true
   },
+
 ]
 
 export default order;

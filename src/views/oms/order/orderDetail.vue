@@ -182,59 +182,23 @@
           </el-form-item>
             </el-col>
           </el-row>
+          <el-row type="flex" class="row-bg" >
+            <el-col :span="15" :offset="2">
+          <el-form-item style="text-align: center" v-show="!routeParams.readonly">
+            <el-button type="primary" size="medium" @click="saveOrUpdateOrder" >下一步</el-button>
+          </el-form-item>
+            </el-col>
+          </el-row>
         </el-card>
-
-
       </el-form>
-      <el-card class="filter-container" shadow="never">
-        <el-collapse v-model="activeNames">
-          <el-collapse-item title="查询" name="1">
-
-          </el-collapse-item>
-        </el-collapse>
-      </el-card>
-      <el-card class="operate-container" shadow="never">
-        <i class="el-icon-tickets"></i>
-        <span>数据列表</span>
-        <el-button
-          class="btn-add"
-          @click="addOrder(false,true)"
-          size="mini">
-          添加
-        </el-button>
-      </el-card>
-      <div class="table-container">
-        <el-table :data="tableData" border stripe>
-          <el-table-column label="序号" type="index" header-align="center" align="center"></el-table-column>
-          <el-table-column prop="goodsName" label="商品名称" >
-            <template slot-scope="scope">
-              <el-input
-                v-model="scope.row.goodsName"></el-input>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="360" align="center">
-            <template slot-scope="scope">
-              <p>
-                <el-button
-                  size="mini"
-                  @click="orderUpdate(scope.$index, scope.row,false)">保存
-                </el-button>
-                <el-button
-                  size="mini"
-                  @click="orderShow(scope.$index, scope.row,true)">查看
-                </el-button>
-                <el-button
-                  size="mini"
-                  type="danger"
-                  @click="orderDelete(scope.$index, scope.row)">删除
-                </el-button>
-              </p>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
+      <orderGoodsList
+        v-if="routeParams.readonly"
+        ref="goodsList"
+        :reload="this.params.reload"
+        :orderId="this.params.orderId"
+      ></orderGoodsList>
       <!--底部操作按钮-->
-      <el-row justify="right">
+     <!-- <el-row justify="right">
         <el-col :offset="18" :span="6">
           <el-button @click="saveOrUpdateOrder" v-show="!routeParams.readonly">
             保存
@@ -243,23 +207,19 @@
             返回
           </el-button>
         </el-col>
-      </el-row>
+      </el-row>-->
     </div>
 </template>
 
 <script>
-    import { saveOrUpdateOrder,queryOrderGoodsList,getOrderInfo,getAddress } from '@/api/order'
+    import { saveOrUpdateOrder,getOrderInfo,getAddress } from '@/api/order'
+    import orderGoodsList from './components/order-goods-list'
     import { getOrderAddress } from '@/api/orderAddress'
     import {isPhone, isMobile} from '@/utils/validate'
     import {current_page_params} from '@/utils/constant'
     export default {
         name: 'orderDetail',
-        props:{
-            valueFormat: {
-                type: String,
-                default: "yyyy-MM-dd HH:mm:ss"
-            },
-        },
+      components: {orderGoodsList},
         data() {
             var validatePhoneNumber = async (rule, value, callback) => {
                 if (!isMobile(value) && !isPhone(value)) {
@@ -269,7 +229,6 @@
             };
             return {
                 formName: 'dataForm',
-                activeNames:[],
                 routeParams:{
                     readonly:true,
                     isAdd:false,
@@ -285,6 +244,10 @@
                 cityOptions:[],
                 areaOptions:[],
                 townOptions:[],
+              params:{
+                orderId:'',
+                reload:'',
+              },
                 dataForm: {
                     id:'',
                     customer:'',
@@ -352,7 +315,8 @@
                             this.dataForm = res.data
                             this.dataForm.building = str[0];
                             this.dataForm.houseNumber = str[1];
-                            this.loadTableData(res.data.id);
+                          this.params.reload = new Date().toLocaleString();
+                          this.params.orderId = res.data.id;
                         }else {
                             this.$message.error(res.msg);
                         }
@@ -383,17 +347,6 @@
                         this.provinceOptions = res.data;
                     }else {
                         this.$message.error(res.msg);
-                    }
-                }).catch(() => {
-                    this.$message.error('请求错误!');
-                    this.loading = false
-                })
-            },
-            loadTableData(id){
-                this.searchFormData.orderId = id;
-                queryOrderGoodsList(this.searchFormData).then(res => {
-                    if (res.code === 0) {
-                        this.tableData = res.data;
                     }
                 }).catch(() => {
                     this.$message.error('请求错误!');
@@ -442,6 +395,7 @@
                                 this.dataForm.building = str[0];
                                 this.dataForm.houseNumber = str[1];
                                 this.$message.success(res.msg);
+                                this.$emit('nextStep',this.dataForm.id);
                             } else {
                                 this.$message.error(res.msg);
                             }
@@ -533,8 +487,11 @@
               }
           },
             async mounted() {
+              if(this.routeObj){
+                this.routeParams = this.routeObj;
+              }else {
                 this.routeParams = JSON.parse(this.commonJs.getStore(current_page_params));
-                console.log(this.routeParams)
+              }
                 this.loadData();
                 this.loadAddress();
             },
@@ -555,6 +512,15 @@
                 }
             },
         },
+      props: {
+        routeObj: {
+          type: Object,
+        },
+        valueFormat: {
+          type: String,
+          default: "yyyy-MM-dd HH:mm:ss"
+        },
+      }
     }
 </script>
 <style scoped>

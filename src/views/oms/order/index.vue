@@ -238,14 +238,14 @@
                         this.openDialogChoose = true
                     })
                     .catch(action => {
-                        this.$router.push({name:'orderDetail',params:{readonly: readonly,isAdd:isAdd}});
+                        this.$router.push({name:'orderUpdate',params:{readonly: readonly,isAdd:isAdd}});
                     });
             },
             orderShow(index,row,readonly){
                 this.$router.push({name:'orderDetail',params:{id:row.id,readonly: readonly,isAdd: false}});
             },
             orderUpdate(index,row,readonly){
-                this.$router.push({name:'orderDetail',params:{id:row.id,readonly: readonly,isAdd: false}});
+                this.$router.push({name:'orderUpdate',params:{id:row.id,readonly: readonly,isAdd: false}});
             },
             orderDelete(index,row){
                 this.$confirm('确认删除？', '警告', {type: "warning"})
