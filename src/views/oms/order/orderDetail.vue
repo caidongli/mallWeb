@@ -1,18 +1,25 @@
 <template>
-    <div>
+    <div id="printCons">
+      <el-card class="operate-container" shadow="never">
+        <i class="el-icon-tickets"></i>
+        <span>基本信息</span>
+        <el-button
+          class="btn-add"
+          @click="goPrint()"
+          v-if="routeParams.readonly"
+          size="mini">
+          打印
+        </el-button>
+      </el-card>
       <el-form
         :disabled="routeParams.readonly"
         :model="dataForm"
         :ref="formName"
         :rules="rules"
         label-position="right"
-        label-width="130px"
+        label-width="150px"
       >
-        <el-card class="filter-container" shadow="never">
-          <div>
-            <span>基本信息</span>
-          </div>
-        <el-row type="flex" class="row-bg">
+        <el-row type="flex" class="row-bg" style="margin-top: 15px">
           <el-col :span="6" :offset="2">
             <el-form-item label="客户名称：" prop="customer">
               <el-input
@@ -189,11 +196,11 @@
           </el-form-item>
             </el-col>
           </el-row>
-        </el-card>
       </el-form>
       <orderGoodsList
         v-if="routeParams.readonly"
         ref="goodsList"
+        :readonly = routeParams.readonly
         :reload="this.params.reload"
         :orderId="this.params.orderId"
       ></orderGoodsList>
@@ -217,6 +224,7 @@
     import { getOrderAddress } from '@/api/orderAddress'
     import {isPhone, isMobile} from '@/utils/validate'
     import {current_page_params} from '@/utils/constant'
+    import print from 'print-js'
     export default {
         name: 'orderDetail',
       components: {orderGoodsList},
@@ -311,18 +319,17 @@
                 if(this.routeParams.id && this.routeParams.id != null && this.routeParams.id != ''){
                     getOrderInfo({id:this.routeParams.id}).then(res => {
                         if (res.code === 0) {
-                            let str = res.data.houseNumber.split("-")
                             this.dataForm = res.data
-                            this.dataForm.building = str[0];
-                            this.dataForm.houseNumber = str[1];
+                            if(res.data.houseNumber != null){
+                                let str = res.data.houseNumber.split("-")
+                                this.dataForm.building = str[0];
+                                this.dataForm.houseNumber = str[1];
+                            }
                           this.params.reload = new Date().toLocaleString();
                           this.params.orderId = res.data.id;
                         }else {
                             this.$message.error(res.msg);
                         }
-                    }).catch(() => {
-                        this.$message.error('请求错误!');
-                        this.loading = false
                     })
                 }else {
                     if(this.routeParams.addressId && this.routeParams.addressId != null && this.routeParams.addressId != ''){
@@ -348,9 +355,6 @@
                     }else {
                         this.$message.error(res.msg);
                     }
-                }).catch(() => {
-                    this.$message.error('请求错误!');
-                    this.loading = false
                 })
             },
             clateReceivableAmount(){
@@ -390,18 +394,17 @@
                         this.dataForm.houseNumber =  this.dataForm.building+"-"+this.dataForm.houseNumber
                         saveOrUpdateOrder(this.dataForm).then(res => {
                             if (res.code === 0) {
-                                let str = res.data.houseNumber.split("-")
                                 this.dataForm = res.data
-                                this.dataForm.building = str[0];
-                                this.dataForm.houseNumber = str[1];
+                                if(res.data.houseNumber != null && res.data.houseNumber !=''){
+                                    let str = res.data.houseNumber.split("-")
+                                    this.dataForm.building = str[0];
+                                    this.dataForm.houseNumber = str[1];
+                                }
                                 this.$message.success(res.msg);
                                 this.$emit('nextStep',this.dataForm.id);
                             } else {
                                 this.$message.error(res.msg);
                             }
-                        }).catch(() => {
-                            this.$message.error('请求错误!');
-                            this.loading = false
                         })
                     } else {
                         this.$notify.error('请输入正确内容!!');
@@ -430,9 +433,6 @@
                     this.dataForm.city = '';
                     this.dataForm.area = '';
                     this.dataForm.town = '';
-                }).catch(() => {
-                    this.$message.error('请求错误!');
-                    this.loading = false
                 })
             },
             handleCityChange(value){
@@ -453,9 +453,6 @@
                     }
                     this.dataForm.area = '';
                     this.dataForm.town = '';
-                }).catch(() => {
-                    this.$message.error('请求错误!');
-                    this.loading = false
                 })
             },
             handleAreaChange(value){
@@ -473,9 +470,6 @@
                         this.$message.error(res.msg);
                     }
                     this.dataForm.town = '';
-                }).catch(() => {
-                    this.$message.error('请求错误!');
-                    this.loading = false
                 })
             },
           createAddress(){
@@ -486,6 +480,24 @@
                       +this.dataForm.developers+this.dataForm.building+"栋"+this.dataForm.houseNumber;
               }
           },
+            goPrint(){
+                printJS({
+                    printable: 'printCons',
+                    type: 'html',
+                    //properties: [
+                    //    { field: 'name', displayName: '姓名', columnSize:`50%`},
+                    //    { field: 'sex', displayName: '性别',columnSize:`50%`},
+                    //],
+                    // header: `<p class="custom-p"> 名单 </p>`,
+                    // style: '#printCons {width: 600px;} .no-print{width: 0px} .itemText1 { width: 200px } .itemText2 { width: 200px } .itemText3 { width: 200px } .itemText4 { width: 200px }',
+                    // gridHeaderStyle:'font-size:12px; padding:3px; border:1px solid; font-weight: 100; text-align:left;',
+                    // gridStyle:'font-size:12px; padding:3px; border:1px solid; text-align:left;',
+                    // repeatTableHeader: true,
+                    // scanStyles:true,
+                    targetStyles: ['*'],
+                    // ignoreElements:['no-print','bc','gb']
+                })
+            },
             async mounted() {
               if(this.routeObj){
                 this.routeParams = this.routeObj;

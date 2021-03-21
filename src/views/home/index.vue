@@ -33,7 +33,7 @@
         </el-col>
       </el-row>
     </div>
-    <div class="un-handle-layout">
+   <!-- <div class="un-handle-layout">
       <div class="layout-title">待处理事务</div>
       <div class="un-handle-content">
         <el-row :gutter="20">
@@ -80,7 +80,7 @@
 
         </el-row>
       </div>
-    </div>
+    </div>-->
     <div class="statistics-layout">
       <div class="layout-title">订单统计</div>
       <el-row>

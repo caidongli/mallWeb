@@ -37,6 +37,14 @@
             <el-input clearable placeholder="支付方式"
                       v-model.trim="searchFormData.payWay"></el-input>
           </el-form-item>
+          <el-form-item label="电话号码：">
+            <el-input clearable placeholder="电话号码"
+                      v-model.trim="searchFormData.telephone"></el-input>
+          </el-form-item>
+          <el-form-item label="地址：">
+            <el-input clearable placeholder="地址"
+                      v-model.trim="searchFormData.address"></el-input>
+          </el-form-item>
           <el-form-item label="订货时间：">
             <el-date-picker
               v-model="searchFormData.orderDateInfo"
@@ -91,6 +99,7 @@
             <p>
               <el-button
                 size="mini"
+                v-if="isSuper == '1' || username ==  scope.row.userName"
                 @click="orderUpdate(scope.$index, scope.row,false)">编辑
               </el-button>
               <el-button
@@ -99,6 +108,7 @@
               </el-button>
               <el-button
                 size="mini"
+                v-if="isSuper == '1' || username ==  scope.row.userName"
                 type="danger"
                 @click="orderDelete(scope.$index, scope.row)">删除
               </el-button>
@@ -142,6 +152,8 @@
                 pageNum: 1,
                 pageSize: 10,
                 total: 0,
+                isSuper:'0',
+                username:'0',
                 activeNames: [],
                 tableData: [], //表格数据
                 openDialogChoose: false,
@@ -151,6 +163,8 @@
                     designer:'',
                     salesman:'',
                     payWay:'',
+                    address:'',
+                    telephone:'',
                     orderDateInfo:[],
                     orderStartDate:'',
                     orderEndDate:'',
@@ -190,6 +204,9 @@
             }
         },
         created() {
+            let param = JSON.parse(this.commonJs.getStore(this.constants.userInfo));
+            this.isSuper = param.isSuper
+            this.username = param.username
             this.loadData();
         },
         methods: {

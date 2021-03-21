@@ -168,9 +168,6 @@
                 }else {
                   this.$message.error(res.msg);
                 }
-              }).catch(() => {
-                this.$message.error('请求错误!');
-                this.loading = false
               })
             }
           },
@@ -187,13 +184,10 @@
                 saveOrUpdateGoods(this.dataForm).then(res => {
                   if (res.code === 0) {
                     this.$message.success(res.msg);
-                    this.closeDialogInfo();
+                      this.$emit('closeDialogInfo','reload');
                   } else {
                     this.$message.error(res.msg);
                   }
-                }).catch(() => {
-                  this.$message.error('请求错误!');
-                  this.loading = false
                 })
               } else {
                 this.$notify.error('请输入正确内容!!');

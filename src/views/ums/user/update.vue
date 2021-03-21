@@ -66,11 +66,19 @@
         </el-col>
       </el-row>
       <el-row type="flex" class="row-bg" justify="center">
-        <el-col :span="15">
+        <el-col :span="8">
           <el-form-item label="状态：" prop="status" required>
             <el-radio-group v-model="dataForm.status">
               <el-radio :label='"1"'>启用</el-radio>
               <el-radio :label='"0"'>禁用</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="是否超级账号：">
+            <el-radio-group v-model="dataForm.isSuper">
+              <el-radio :label='"1"'>是</el-radio>
+              <el-radio :label='"0"'>否</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
@@ -113,6 +121,7 @@
                     nickName: '', //名称
                     note: '', //备注
                     status:'',//账号状态
+                    isSuper:'',
                     password:'',
                     newPassword:'',
                 },

@@ -48,6 +48,24 @@
         <el-table-column prop="phone" label="手机号" ></el-table-column>
         <el-table-column prop="email" label="邮箱" ></el-table-column>
         <el-table-column prop="nickName" label="姓名"></el-table-column>
+        <el-table-column label="有效状态" >
+          <template slot-scope="scope">
+            <el-switch v-model="scope.row.status"
+                       @change="handleChange(scope.$index, scope.row)"
+                       :active-value='"1"'
+                       :inactive-value='"0"'>
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="超级账号" >
+          <template slot-scope="scope">
+            <el-switch v-model="scope.row.isSuper"
+                       @change="handleChange(scope.$index, scope.row)"
+                       :active-value='"1"'
+                       :inactive-value='"0"'>
+            </el-switch>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="360" align="center">
           <template slot-scope="scope">
             <p>
@@ -90,7 +108,7 @@
 </template>
 <script>
     import chooseRole from './conponents/choose-role'
-    import { queryUserByPage,deleteUser } from '@/api/user'
+    import { queryUserByPage,deleteUser,updateUserBySuper } from '@/api/user'
     export default {
         name: "userList",
         components: {chooseRole},
@@ -142,6 +160,22 @@
                     this.$message.error('请求错误!');
                     this.loading = false
                 })
+            },
+            handleChange(index, row){
+                updateUserBySuper(row).then(res => {
+                    if (res.code === 0) {
+                        this.$message({
+                            type: 'success',
+                            message: '修改成功!'
+                        });
+                    }else {
+                        this.loadData();
+                        this.$message.error('请求错误!');
+                    }
+                }).catch(() => {
+                    this.loadData();
+                    this.$message.error('请求错误!');
+                });
             },
             addUser(readonly,isAdd){
                 this.$router.push({name:'userEdit',params:{readonly: readonly,isAdd:isAdd}});

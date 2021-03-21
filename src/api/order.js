@@ -10,6 +10,8 @@ export const delOrder = data => ajax('/admin/order/delOrder', data, 'POST',JSON)
 
 export const saveOrUpdateGoods = data => ajax('/admin/order/saveOrUpdateGoods', data, 'POST',JSON);
 
+export const saveOrUBatchGoods = data => ajax('/admin/order/saveOrUBatchGoods', data, 'POST',JSON);
+
 export const delGoods = data => ajax('/admin/order/delGoods', data, 'POST',JSON);
 
 export const delGoodsBatch = data => ajax('/admin/order/delGoodsBatch', data, 'POST',JSON);
