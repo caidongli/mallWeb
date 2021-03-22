@@ -1,34 +1,42 @@
 <template>
   <div class="app-container">
     <div class="total-layout">
+      <el-row  style="margin-bottom: 20px">
+        <el-col :span="4" :offset="18" style="margin-right: 5px">
+          <el-input
+            size="small"
+            clearable placeholder="销售人员"
+            v-model.trim="query.salesman"></el-input>
+        </el-col>
+        <el-col :span="1" >
+          <el-button
+            class="btn-add"
+            @click="queryData()"
+            size="small">
+            查询
+          </el-button>
+        </el-col>
+      </el-row>
       <el-row :gutter="20">
-        <el-col :span="6">
+        <el-col :span="8">
           <div class="total-frame">
             <img :src="img_home_order" class="total-icon">
             <div class="total-title">今日订单总数</div>
-            <div class="total-value">200</div>
+            <div class="total-value">{{dataForm.todaySum}}</div>
           </div>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="8">
           <div class="total-frame">
             <img :src="img_home_today_amount" class="total-icon">
             <div class="total-title">今日销售总额</div>
-            <div class="total-value">￥5000.00</div>
+            <div class="total-value">￥{{dataForm.todayAmount}}</div>
           </div>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="8">
           <div class="total-frame">
             <img :src="img_home_yesterday_amount" class="total-icon">
             <div class="total-title">昨日销售总额</div>
-            <div class="total-value">￥5000.00</div>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div class="total-frame">
-            <svg-icon icon-class="total-week" class="total-icon">
-            </svg-icon>
-            <div class="total-title">近7天销售总额</div>
-            <div class="total-value">￥50000.00</div>
+            <div class="total-value">￥{{dataForm.yesterdayAmount}}</div>
           </div>
         </el-col>
       </el-row>
@@ -88,34 +96,38 @@
           <div style="padding: 20px">
             <div>
               <div style="color: #909399;font-size: 14px">本月订单总数</div>
-              <div style="color: #606266;font-size: 24px;padding: 10px 0">10000</div>
+              <div style="color: #606266;font-size: 24px;padding: 10px 0">{{dataForm.monthSum}}</div>
               <div>
-                <span class="color-success" style="font-size: 14px">+10%</span>
+                <span class="color-success" style="font-size: 14px" v-if="dataForm.monthSumPCT < 0">{{dataForm.monthSumPCT}}%</span>
+                <span class="color-danger" style="font-size: 14px" v-if="dataForm.monthSumPCT > 0">{{dataForm.monthSumPCT}}%</span>
                 <span style="color: #C0C4CC;font-size: 14px">同比上月</span>
               </div>
             </div>
             <div style="margin-top: 20px;">
               <div style="color: #909399;font-size: 14px">本周订单总数</div>
-              <div style="color: #606266;font-size: 24px;padding: 10px 0">1000</div>
+              <div style="color: #606266;font-size: 24px;padding: 10px 0">{{dataForm.weekDaySum}}</div>
               <div>
-                <span class="color-danger" style="font-size: 14px">-10%</span>
+                <span class="color-danger" style="font-size: 14px"  v-if="dataForm.weekSumPCT > 0">{{dataForm.weekSumPCT}}%</span>
+                <span class="color-success" style="font-size: 14px"  v-if="dataForm.weekSumPCT < 0">{{dataForm.weekSumPCT}}%</span>
                 <span style="color: #C0C4CC;font-size: 14px">同比上周</span>
               </div>
             </div>
             <div style="margin-top: 20px;">
               <div style="color: #909399;font-size: 14px">本月销售总额</div>
-              <div style="color: #606266;font-size: 24px;padding: 10px 0">100000</div>
+              <div style="color: #606266;font-size: 24px;padding: 10px 0">{{dataForm.monthAmount}}</div>
               <div>
-                <span class="color-success" style="font-size: 14px">+10%</span>
+                <span class="color-success" style="font-size: 14px" v-if="dataForm.monthAmountPCT < 0">{{dataForm.monthAmountPCT}}%</span>
+                <span class="color-danger" style="font-size: 14px"  v-if="dataForm.monthAmountPCT > 0">{{dataForm.monthAmountPCT}}%</span>
                 <span style="color: #C0C4CC;font-size: 14px">同比上月</span>
               </div>
             </div>
             <div style="margin-top: 20px;">
               <div style="color: #909399;font-size: 14px">本周销售总额</div>
-              <div style="color: #606266;font-size: 24px;padding: 10px 0">50000</div>
+              <div style="color: #606266;font-size: 24px;padding: 10px 0">{{dataForm.weekDayAmount}}</div>
               <div>
-                <span class="color-danger" style="font-size: 14px">-10%</span>
-                <span style="color: #C0C4CC;font-size: 14px">同比上周</span>
+                <span class="color-danger" style="font-size: 14px" v-if="dataForm.weekDayAmountPCT > 0">{{dataForm.weekDayAmountPCT}}%</span>
+                <span class="color-success" style="font-size: 14px" v-if="dataForm.weekDayAmountPCT < 0">{{dataForm.weekDayAmountPCT}}%</span>
+                <span style="color: #C0C4CC;font-size: 14px">color-success</span>
               </div>
             </div>
           </div>
@@ -129,6 +141,7 @@
               type="daterange"
               align="right"
               unlink-panels
+              :value-format="valueFormat"
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
@@ -151,34 +164,33 @@
 </template>
 
 <script>
-  import {str2Date} from '@/utils/date';
+    import { orderInfo,orderInfoByDay } from '@/api/order'
   import img_home_order from '@/assets/images/home_order.png';
   import img_home_today_amount from '@/assets/images/home_today_amount.png';
   import img_home_yesterday_amount from '@/assets/images/home_yesterday_amount.png';
-  const DATA_FROM_BACKEND = {
-    columns: ['date', 'orderCount','orderAmount'],
-    rows: [
-      {date: '2018-11-01', orderCount: 10, orderAmount: 1093},
-      {date: '2018-11-02', orderCount: 20, orderAmount: 2230},
-      {date: '2018-11-03', orderCount: 33, orderAmount: 3623},
-      {date: '2018-11-04', orderCount: 50, orderAmount: 6423},
-      {date: '2018-11-05', orderCount: 80, orderAmount: 8492},
-      {date: '2018-11-06', orderCount: 60, orderAmount: 6293},
-      {date: '2018-11-07', orderCount: 20, orderAmount: 2293},
-      {date: '2018-11-08', orderCount: 60, orderAmount: 6293},
-      {date: '2018-11-09', orderCount: 50, orderAmount: 5293},
-      {date: '2018-11-10', orderCount: 30, orderAmount: 3293},
-      {date: '2018-11-11', orderCount: 20, orderAmount: 2293},
-      {date: '2018-11-12', orderCount: 80, orderAmount: 8293},
-      {date: '2018-11-13', orderCount: 100, orderAmount: 10293},
-      {date: '2018-11-14', orderCount: 10, orderAmount: 1293},
-      {date: '2018-11-15', orderCount: 40, orderAmount: 4293}
-    ]
-  };
   export default {
     name: 'home',
+      props:{
+          valueFormat: {
+              type: String,
+              default: "yyyy-MM-dd HH:mm:ss"
+          },
+      },
     data() {
       return {
+          dataForm:{
+              todaySum:'',
+              todayAmount:'',
+              monthAmount:'',
+              monthSum:'',
+              yesterdayAmount:'',
+              weekDaySum:'',
+              weekDayAmount:'',
+              monthAmountPCT:0,
+              monthSumPCT:0,
+              weekDayAmountPCT:0,
+              weekSumPCT:0,
+          },
         pickerOptions: {
           shortcuts: [{
             text: '最近一周',
@@ -214,6 +226,11 @@
           columns: [],
           rows: []
         },
+          query:{
+              startTime:null,
+              endTime:null,
+              salesman:'',
+          },
         loading: false,
         dataEmpty: false,
         img_home_order,
@@ -222,37 +239,45 @@
       }
     },
     created(){
-      this.initOrderCountDate();
       this.getData();
+      this.loadData();
     },
     methods:{
+        queryData(){
+            this.getData();
+            this.loadData();
+        },
       handleDateChange(){
         this.getData();
       },
-      initOrderCountDate(){
-        let start = new Date();
-        start.setFullYear(2018);
-        start.setMonth(10);
-        start.setDate(1);
-        const end = new Date();
-        end.setTime(start.getTime() + 1000 * 60 * 60 * 24 * 7);
-        this.orderCountDate=[start,end];
-      },
+        loadData(){
+            orderInfo(this.query).then(res => {
+                if (res.code === 0) {
+                    this.dataForm = res.data
+                }
+            }).catch(() => {
+                this.$message.error('请求错误!');
+                this.loading = false
+            })
+        },
       getData(){
         setTimeout(() => {
           this.chartData = {
             columns: ['date', 'orderCount','orderAmount'],
             rows: []
           };
-          for(let i=0;i<DATA_FROM_BACKEND.rows.length;i++){
-            let item=DATA_FROM_BACKEND.rows[i];
-            let currDate=str2Date(item.date);
-            let start=this.orderCountDate[0];
-            let end=this.orderCountDate[1];
-            if(currDate.getTime()>=start.getTime()&&currDate.getTime()<=end.getTime()){
-              this.chartData.rows.push(item);
-            }
+          if(this.orderCountDate != null && this.orderCountDate != ''){
+              this.query.startTime=this.orderCountDate[0];
+              this.query.endTime=this.orderCountDate[1];
           }
+            orderInfoByDay(this.query).then(res => {
+                if (res.code === 0) {
+                    this.chartData.rows = res.data
+                }
+            }).catch(() => {
+                this.$message.error('请求错误!');
+                this.loading = false
+            })
           this.dataEmpty = false;
           this.loading = false
         }, 1000)

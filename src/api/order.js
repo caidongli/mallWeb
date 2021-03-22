@@ -14,6 +14,10 @@ export const saveOrUBatchGoods = data => ajax('/admin/order/saveOrUBatchGoods', 
 
 export const delGoods = data => ajax('/admin/order/delGoods', data, 'POST',JSON);
 
+export const orderInfo = data => ajax('/admin/order/orderInfo', data, 'POST',JSON);
+
+export const orderInfoByDay = data => ajax('/admin/order/orderInfoByDay', data, 'POST',JSON);
+
 export const delGoodsBatch = data => ajax('/admin/order/delGoodsBatch', data, 'POST',JSON);
 
 export const queryOrderGoodsList = data => ajax('/admin/order/queryOrderGoodsList', data, 'POST',JSON);
