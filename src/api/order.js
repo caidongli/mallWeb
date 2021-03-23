@@ -18,6 +18,12 @@ export const orderInfo = data => ajax('/admin/order/orderInfo', data, 'POST',JSO
 
 export const orderInfoByDay = data => ajax('/admin/order/orderInfoByDay', data, 'POST',JSON);
 
+export const updateOrderStatus = data => ajax('/admin/order/updateOrderStatus', data, 'POST',JSON);
+
+export const saveOrderAmount = data => ajax('/admin/order/saveOrderAmount', data, 'POST',JSON);
+
+export const queryOrderAmount = data => ajax('/admin/order/queryOrderAmount', data, 'POST',JSON);
+
 export const delGoodsBatch = data => ajax('/admin/order/delGoodsBatch', data, 'POST',JSON);
 
 export const queryOrderGoodsList = data => ajax('/admin/order/queryOrderGoodsList', data, 'POST',JSON);

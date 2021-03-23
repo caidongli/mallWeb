@@ -110,7 +110,7 @@
                 size="mini"
                 v-if="isSuper == '1' || username ==  scope.row.userName"
                 type="danger"
-                @click="orderDelete(scope.$index, scope.row)">删除
+                @click="updateOrderStatus(scope.$index, scope.row)">作废
               </el-button>
             </p>
           </template>
@@ -137,7 +137,7 @@
 </template>
 <script>
     import chooseAddress from './components/choose-address'
-    import { delOrder,queryOrderList } from '@/api/order'
+    import { delOrder,queryOrderList,updateOrderStatus } from '@/api/order'
     export default {
         name: "orderList",
         components: {chooseAddress},
@@ -264,10 +264,10 @@
             orderUpdate(index,row,readonly){
                 this.$router.push({name:'orderUpdate',params:{id:row.id,readonly: readonly,isAdd: false}});
             },
-            orderDelete(index,row){
-                this.$confirm('确认删除？', '警告', {type: "warning"})
+            updateOrderStatus(index,row){
+                this.$confirm('确认作废？', '警告', {type: "warning"})
                     .then(async () => {
-                        delOrder({id:row.id}).then(res => {
+                        updateOrderStatus({id:row.id,status:"0"}).then(res => {
                             if (res.code === 0) {
                                 this.loadData();
                             }

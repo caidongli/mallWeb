@@ -204,9 +204,6 @@
                 let obj = {};
                 this.$set(obj,'orderId',this.orderId);
                 this.tableData.push(obj)
-            /*this.params.readonly = readonly;
-            this.params.reload = new Date().toLocaleString();
-            this.params.openDialogInfo = true;*/
           },
             save(row){
                 saveOrUpdateGoods(row).then(res => {

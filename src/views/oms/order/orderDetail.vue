@@ -5,30 +5,37 @@
         <span>基本信息</span>
         <el-button
           class="btn-add"
-          @click="goPrint()"
-          v-if="routeParams.readonly"
+          v-if="this.params.orderId.length > 0"
+          @click="openAmount('0')"
           size="mini">
-          打印
+          预收款
         </el-button>
-      </el-card>
-      <el-form
-        :disabled="routeParams.readonly"
-        :model="dataForm"
-        :ref="formName"
-        :rules="rules"
-        label-position="right"
-        label-width="150px"
-      >
-        <el-row type="flex" class="row-bg" style="margin-top: 15px">
-          <el-col :span="6" :offset="2">
-            <el-form-item label="客户名称：" prop="customer">
-              <el-input
-                v-model.trim="dataForm.customer"></el-input>
-            </el-form-item>
+        <el-button
+          class="btn-add"
+          v-if="this.params.orderId.length > 0"
+          style="margin-right: 15px"
+          @click="openAmount('1')"
+          size="mini">
+          成交金额
+            </el-button>
+            </el-card>
+            <el-form
+              :model="dataForm"
+              :ref="formName"
+              :rules="rules"
+              label-position="right"
+              label-width="150px"
+            >
+              <el-row type="flex" class="row-bg" style="margin-top: 15px">
+                <el-col :span="6" :offset="2">
+                  <el-form-item label="客户名称：" prop="customer">
+                    <el-input
+                      v-model.trim="dataForm.customer" :disabled="routeParams.readonly"></el-input>
+                  </el-form-item>
           </el-col>
           <el-col :span="6" :offset="3">
             <el-form-item label="订货日期:" prop="orderDate" required>
-              <el-date-picker type="datetime" v-model="dataForm.orderDate" :value-format="valueFormat"></el-date-picker>
+              <el-date-picker type="datetime" v-model="dataForm.orderDate" :value-format="valueFormat" :disabled="routeParams.readonly"></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
@@ -36,12 +43,12 @@
           <el-col :span="6" :offset="2">
             <el-form-item label="电话：" prop="telephone">
               <el-input
-                v-model.trim="dataForm.telephone"></el-input>
+                v-model.trim="dataForm.telephone" :disabled="routeParams.readonly"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6" :offset="3">
             <el-form-item label="预交货时间:" prop="preDeliveryData" required>
-              <el-date-picker type="datetime" v-model="dataForm.preDeliveryData" :value-format="valueFormat"></el-date-picker>
+              <el-date-picker type="datetime" v-model="dataForm.preDeliveryData" :value-format="valueFormat" :disabled="routeParams.readonly"></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
@@ -49,13 +56,13 @@
           <el-col :span="6" :offset="2">
             <el-form-item label="设计师：" prop="designer">
               <el-input
-                v-model.trim="dataForm.designer"></el-input>
+                v-model.trim="dataForm.designer" :disabled="routeParams.readonly"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6" :offset="3">
             <el-form-item label="销售人员：" prop="salesman">
               <el-input
-                v-model.trim="dataForm.salesman"></el-input>
+                v-model.trim="dataForm.salesman" :disabled="routeParams.readonly"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -63,13 +70,13 @@
           <el-col :span="6" :offset="2">
             <el-form-item label="支付方式：" prop="payWay">
               <el-input
-                v-model.trim="dataForm.payWay"></el-input>
+                v-model.trim="dataForm.payWay" :disabled="routeParams.readonly"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6" :offset="3">
             <el-form-item label="合计金额：" prop="totalAmount">
               <el-input
-                v-model.trim="dataForm.totalAmount"></el-input>
+                v-model.trim="dataForm.totalAmount" :disabled="routeParams.readonly"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -77,13 +84,13 @@
             <el-col :span="6" :offset="2">
               <el-form-item label="折扣：">
                 <el-input
-                  v-model.trim="dataForm.discount" @input="clateReceivableAmount()"></el-input>
+                  v-model.trim="dataForm.discount" @input="clateReceivableAmount()" :disabled="routeParams.readonly"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6" :offset="3">
-              <el-form-item label="应收金额：" prop="receivableAmount">
+              <el-form-item label="成交金额：" prop="receivableAmount">
                 <el-input
-                  v-model.trim="dataForm.receivableAmount" @input="clateDiscount()"></el-input>
+                  v-model.trim="dataForm.receivableAmount" @input="clateDiscount()" :disabled="this.params.orderId.length > 0"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -91,38 +98,38 @@
             <el-col :span="6" :offset="2">
               <el-form-item label="预收金额：" prop="preReceivableAmount">
                 <el-input
-                  v-model.trim="dataForm.preReceivableAmount" @input="clatepreReceivableAmount()"></el-input>
+                  v-model.trim="dataForm.preReceivableAmount" @input="clatepreReceivableAmount()" :disabled="this.params.orderId.length > 0"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6" :offset="3">
               <el-form-item label="预收款比例(%)：" prop="preReceivableRatio">
                 <el-input
-                  v-model.trim="dataForm.preReceivableRatio"></el-input>
+                  v-model.trim="dataForm.preReceivableRatio" :disabled="this.params.orderId.length > 0"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row type="flex" class="row-bg">
             <el-col :span="6" :offset="2">
-              <el-form-item label="补交金额：" prop="repayAmount">
+              <el-form-item label="尾款：" prop="repayAmount">
                 <el-input
-                  v-model.trim="dataForm.repayAmount"></el-input>
+                  v-model.trim="dataForm.repayAmount" :disabled="this.params.orderId.length > 0"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="5" :offset="2">
               <el-form-item label="门牌号：" prop="building">
-                <el-input v-model="dataForm.building"  placeholder="楼号">
+                <el-input v-model="dataForm.building"  placeholder="楼号" :disabled="routeParams.readonly">
                   <template slot="append" >栋</template>
                 </el-input>
               </el-form-item>
             </el-col>
             <el-col :span="2">
-              <el-input v-model="dataForm.houseNumber" placeholder="门牌号"></el-input>
+              <el-input v-model="dataForm.houseNumber" placeholder="门牌号" :disabled="routeParams.readonly"></el-input>
             </el-col>
           </el-row>
           <el-row type="flex" class="row-bg" v-if="!routeParams.addressId">
             <el-col :span="6" :offset="2">
               <el-form-item label="开发商：" prop="developers">
-                <el-input v-model="dataForm.developers" ></el-input>
+                <el-input v-model="dataForm.developers" :disabled="routeParams.readonly" ></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -131,7 +138,8 @@
               <el-form-item label="地址：" prop="province">
                 <el-select v-model="dataForm.province" clearable
                            placeholder="省份"
-                           @change="handleProvinceChange">
+                           @change="handleProvinceChange"
+                           :disabled="routeParams.readonly">
                   <el-option
                     v-for="item in provinceOptions"
                     :key="item.code"
@@ -142,7 +150,9 @@
               </el-form-item>
             </el-col>
             <el-col :span="3" :offset="1">
-                <el-select v-model="dataForm.city" clearable placeholder="市" @change="handleCityChange">
+                <el-select v-model="dataForm.city" clearable placeholder="市"
+                           :disabled="routeParams.readonly"
+                           @change="handleCityChange">
                   <el-option
                     v-for="item in cityOptions"
                     :key="item.code"
@@ -152,7 +162,9 @@
                 </el-select>
             </el-col>
             <el-col :span="3" :offset="1">
-                <el-select v-model="dataForm.area" clearable placeholder="区" @change="handleAreaChange">
+                <el-select v-model="dataForm.area" clearable placeholder="区"
+                           :disabled="routeParams.readonly"
+                           @change="handleAreaChange">
                   <el-option
                     v-for="item in areaOptions"
                     :key="item.code"
@@ -163,7 +175,7 @@
             </el-col>
             <el-col :span="3" :offset="1">
                 <el-select v-model="dataForm.town" clearable placeholder="街道"
-                           @change="$forceUpdate()">
+                           @change="$forceUpdate()" :disabled="routeParams.readonly">
                   <el-option
                     v-for="item in townOptions"
                     :key="item.code"
@@ -176,15 +188,15 @@
           <el-row type="flex" class="row-bg" >
             <el-col :span="15" :offset="2">
               <el-form-item label="详细地址：" prop="address">
-                <el-input v-model="dataForm.address">
-                  <el-button slot="append" @click="createAddress()">生成地址信息</el-button>
+                <el-input v-model="dataForm.address" :disabled="routeParams.readonly">
+                  <el-button slot="append" @click="createAddress()" :disabled="routeParams.readonly">生成地址信息</el-button>
                 </el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row type="flex" class="row-bg" >
             <el-col :span="15" :offset="2">
-          <el-form-item label="备注：">
+          <el-form-item label="备注：" :disabled="routeParams.readonly">
             <el-input type="textarea" v-model="dataForm.remark"></el-input>
           </el-form-item>
             </el-col>
@@ -204,6 +216,15 @@
         :reload="this.params.reload"
         :orderId="this.params.orderId"
       ></orderGoodsList>
+      <orderAmountList
+        :openDialogAmount="this.params.openDialogAmount"
+        :type="this.params.type"
+        ref="AmountList"
+        :readonly = routeParams.readonly
+        :reload="this.params.reload"
+        :orderId="this.params.orderId"
+        @closeDialogAmount="closeDialogAmount"
+      ></orderAmountList>
       <!--底部操作按钮-->
      <!-- <el-row justify="right">
         <el-col :offset="18" :span="6">
@@ -221,13 +242,14 @@
 <script>
     import { saveOrUpdateOrder,getOrderInfo,getAddress } from '@/api/order'
     import orderGoodsList from './components/order-goods-list'
+    import orderAmountList from './components/order-amount-list'
     import { getOrderAddress } from '@/api/orderAddress'
     import {isPhone, isMobile} from '@/utils/validate'
     import {current_page_params} from '@/utils/constant'
     import print from 'print-js'
     export default {
         name: 'orderDetail',
-      components: {orderGoodsList},
+      components: {orderGoodsList,orderAmountList},
         data() {
             var validatePhoneNumber = async (rule, value, callback) => {
                 if (!isMobile(value) && !isPhone(value)) {
@@ -255,6 +277,8 @@
               params:{
                 orderId:'',
                 reload:'',
+                  openDialogAmount:false,
+                  type:'',
               },
                 dataForm: {
                     id:'',
@@ -480,6 +504,17 @@
                       +this.dataForm.developers+this.dataForm.building+"栋"+this.dataForm.houseNumber;
               }
           },
+            openAmount(type){
+                this.params.type = type
+                this.params.reload = new Date().toLocaleString();
+                this.params.openDialogAmount = true;
+            },
+            closeDialogAmount(obj){
+                if(obj == 'reload'){
+                    this.loadData()
+                }
+                this.params.openDialogAmount = false;
+            },
             goPrint(){
                 printJS({
                     printable: 'printCons',
@@ -509,20 +544,6 @@
             },
         },
         watch: {
-            'dataForm.totalAmount': function (newVal, oldVal) {
-                if (newVal) {
-                    if(this.dataForm.discount && this.dataForm.discount != ''){
-                        let num = this.dataForm.discount * this.dataForm.totalAmount;
-                        this.dataForm.receivableAmount =  num.toFixed(2)
-                    }
-                    if(this.dataForm.receivableAmount && this.dataForm.receivableAmount != ''){
-                        let num = this.dataForm.receivableAmount - this.dataForm.preReceivableAmount;
-                        this.dataForm.repayAmount =  num.toFixed(2)
-                        let num2 = this.dataForm.preReceivableAmount / this.dataForm.receivableAmount ;
-                        this.dataForm.preReceivableRatio =  num2.toFixed(2)
-                    }
-                }
-            },
         },
       props: {
         routeObj: {
