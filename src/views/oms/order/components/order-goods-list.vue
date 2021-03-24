@@ -28,27 +28,6 @@
     </el-card>
     <div class="table-container">
       <el-table :data="tableData" border stripe >
-        <el-table-column label="序号" type="index" header-align="center" align="center"></el-table-column>
-        <el-table-column prop="goodsCode" label="商品编码" >
-          <template slot-scope="scope">
-            <el-input v-model="scope.row.goodsCode" :disabled="readonly"></el-input>
-          </template>
-        </el-table-column>
-        <el-table-column prop="goodsName" label="商品名称" >
-          <template slot-scope="scope">
-            <el-input v-model="scope.row.goodsName" :disabled="readonly"></el-input>
-          </template>
-        </el-table-column>
-        <el-table-column prop="colorCode" label="颜色编码" >
-          <template slot-scope="scope">
-            <el-input v-model="scope.row.colorCode" :disabled="readonly"></el-input>
-          </template>
-        </el-table-column>
-        <el-table-column prop="colorName" label="颜色名称" >
-          <template slot-scope="scope">
-            <el-input v-model="scope.row.colorName" :disabled="readonly"></el-input>
-          </template>
-        </el-table-column>
         <el-table-column prop="goodsType" label="商品类别" >
           <template slot-scope="scope">
             <el-select v-model="scope.row.goodsType" placeholder="商品类别" :disabled="readonly">
@@ -61,19 +40,29 @@
             </el-select>
           </template>
         </el-table-column>
-        <el-table-column prop="price" label="规格型号" >
+        <el-table-column prop="goodsName" label="商品名称" >
+          <template slot-scope="scope">
+            <el-input v-model="scope.row.goodsName" :disabled="readonly"></el-input>
+          </template>
+        </el-table-column>
+        <el-table-column prop="price" label="规格" >
           <template slot-scope="scope">
             <el-input v-model="scope.row.specificationType" :disabled="readonly"></el-input>
           </template>
         </el-table-column>
+        <el-table-column prop="colorName" label="颜色" >
+          <template slot-scope="scope">
+            <el-input v-model="scope.row.colorName" :disabled="readonly"></el-input>
+          </template>
+        </el-table-column>
         <el-table-column prop="price" label="单价" >
           <template slot-scope="scope">
-            <el-input v-model="scope.row.price" :disabled="readonly"></el-input>
+            <el-input v-model="scope.row.price" :disabled="readonly" @input="clateReceivableAmount(scope.row)"></el-input>
           </template>
         </el-table-column>
         <el-table-column prop="number" label="数量" >
           <template slot-scope="scope">
-            <el-input v-model="scope.row.number" :disabled="readonly"></el-input>
+            <el-input v-model="scope.row.number" :disabled="readonly" @input="clateReceivableAmount(scope.row)"></el-input>
           </template>
         </el-table-column>
         <el-table-column prop="totalAmount" label="金额" >
@@ -172,6 +161,11 @@
             rowIndex({row, rowIndex}) {
                 row.rowIndex = rowIndex;
             },
+            clateReceivableAmount(row){
+                if(row.price && row.number != ''){
+                    row.totalAmount = (row.price * row.number).toFixed(2);
+                }
+            },
             loadData() {
                 let data = [];
                 this.tableData.forEach(item=> {
@@ -237,7 +231,7 @@
                 saveOrUBatchGoods(this.tableData).then(res => {
                     if (res.code === 0) {
                         this.$message.success(res.msg);
-                        this.$router.push({name:'order',params:{}});
+                        this.$router.push({name:'orderDetail',params:{id:this.orderId,readonly: true,isAdd: false}});
                     } else {
                         this.$message.error(res.msg);
                     }

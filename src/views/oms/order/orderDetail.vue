@@ -35,7 +35,7 @@
           </el-col>
           <el-col :span="6" :offset="3">
             <el-form-item label="订货日期:" prop="orderDate" required>
-              <el-date-picker type="datetime" v-model="dataForm.orderDate" :value-format="valueFormat" :disabled="routeParams.readonly"></el-date-picker>
+              <el-date-picker type="date" v-model="dataForm.orderDate" :value-format="valueFormat" :disabled="routeParams.readonly"></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
@@ -48,7 +48,7 @@
           </el-col>
           <el-col :span="6" :offset="3">
             <el-form-item label="预交货时间:" prop="preDeliveryData" required>
-              <el-date-picker type="datetime" v-model="dataForm.preDeliveryData" :value-format="valueFormat" :disabled="routeParams.readonly"></el-date-picker>
+              <el-date-picker type="date" v-model="dataForm.preDeliveryData" :value-format="valueFormat" :disabled="routeParams.readonly"></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
@@ -197,7 +197,7 @@
           <el-row type="flex" class="row-bg" >
             <el-col :span="15" :offset="2">
           <el-form-item label="备注：" :disabled="routeParams.readonly">
-            <el-input type="textarea" v-model="dataForm.remark"></el-input>
+            <el-input type="textarea" v-model="dataForm.remark" :disabled="routeParams.readonly"></el-input>
           </el-form-item>
             </el-col>
           </el-row>
@@ -551,7 +551,7 @@
         },
         valueFormat: {
           type: String,
-          default: "yyyy-MM-dd HH:mm:ss"
+          default: "yyyy-MM-dd"
         },
       }
     }

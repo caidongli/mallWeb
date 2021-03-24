@@ -33,10 +33,6 @@
             <el-input clearable placeholder="销售人员"
                       v-model.trim="searchFormData.salesman"></el-input>
           </el-form-item>
-          <el-form-item label="支付方式：">
-            <el-input clearable placeholder="支付方式"
-                      v-model.trim="searchFormData.payWay"></el-input>
-          </el-form-item>
           <el-form-item label="电话号码：">
             <el-input clearable placeholder="电话号码"
                       v-model.trim="searchFormData.telephone"></el-input>
@@ -68,6 +64,16 @@
               end-placeholder="结束日期"
               align="right">
             </el-date-picker>
+          </el-form-item>
+          <el-form-item label="订单状态：">
+            <el-select v-model="searchFormData.orderStatus" @change="loadData()" placeholder="订单状态" clearable>
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
           </el-form-item>
         </el-form>
       </div>
@@ -158,12 +164,20 @@
                 tableData: [], //表格数据
                 openDialogChoose: false,
                 reload:'',
+                options: [{
+                    value: '1',
+                    label: '已关闭'
+                }, {
+                    value: '0',
+                    label: '未关闭'
+                }],
                 searchFormData: {
                     customer: '',
                     designer:'',
                     salesman:'',
                     payWay:'',
                     address:'',
+                    orderStatus:'',
                     telephone:'',
                     orderDateInfo:[],
                     orderStartDate:'',

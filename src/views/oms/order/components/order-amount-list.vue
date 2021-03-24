@@ -13,6 +13,7 @@
       <el-button
         class="btn-add"
         @click="add(false)"
+        v-if="!readonly"
         size="mini">
         添加
       </el-button>
@@ -21,14 +22,24 @@
     <div class="table-container">
       <el-table :data="tableData" border stripe >
         <el-table-column label="序号" type="index" header-align="center" align="center"></el-table-column>
-        <el-table-column prop="goodsCode" label="金额" >
+        <el-table-column prop="amount" label="金额" >
           <template slot-scope="scope">
             <el-input v-model="scope.row.amount" :disabled="readonly || (scope.row.id != null && scope.row.id != '')"></el-input>
           </template>
         </el-table-column>
-        <el-table-column prop="colorCode" label="备注" >
+        <el-table-column prop="remark" label="备注" >
           <template slot-scope="scope">
             <el-input v-model="scope.row.remark" :disabled="readonly || (scope.row.id != null && scope.row.id != '')"></el-input>
+          </template>
+        </el-table-column>
+        <el-table-column prop="paymentTime" label="付款时间" v-if="type == '0'">
+          <template slot-scope="scope">
+            <el-date-picker type="date" v-model="scope.row.paymentTime" :value-format="valueFormat" :disabled="readonly || (scope.row.id != null && scope.row.id != '')"></el-date-picker>
+          </template>
+        </el-table-column>
+        <el-table-column prop="paymentTime" label="变更时间" v-if="type == '1'">
+          <template slot-scope="scope">
+            <el-date-picker type="date" v-model="scope.row.paymentTime" :value-format="valueFormat" :disabled="readonly || (scope.row.id != null && scope.row.id != '')"></el-date-picker>
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="记录时间" >
@@ -108,6 +119,10 @@
         },
         //与 上级组件通信
         props: {
+            valueFormat: {
+                type: String,
+                default: "yyyy-MM-dd"
+            },
             reload: {
                 type: String,
                 default: "",
