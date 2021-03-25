@@ -5,6 +5,14 @@
         <span>基本信息</span>
         <el-button
           class="btn-add"
+          v-if="this.dataForm.id.length > 0"
+          @click="print()"
+          size="mini">
+          打印订单
+        </el-button>
+        <el-button
+          class="btn-add"
+          style="margin-right: 15px"
           v-if="this.params.orderId.length > 0"
           @click="openAmount('0')"
           size="mini">
@@ -27,6 +35,20 @@
               label-width="150px"
             >
               <el-row type="flex" class="row-bg" style="margin-top: 15px">
+                <el-col :span="6" :offset="2">
+                  <el-form-item label="订单号：" prop="orderNumber">
+                    <el-input
+                      v-model.trim="dataForm.orderNumber" :disabled="routeParams.readonly"></el-input>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6" :offset="3">
+                  <el-form-item label="回执：" prop="receipt">
+                    <el-input
+                      v-model.trim="dataForm.receipt" :disabled="routeParams.readonly"></el-input>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row type="flex" class="row-bg">
                 <el-col :span="6" :offset="2">
                   <el-form-item label="客户名称：" prop="customer">
                     <el-input
@@ -115,6 +137,19 @@
                   v-model.trim="dataForm.repayAmount" :disabled="this.params.orderId.length > 0"></el-input>
               </el-form-item>
             </el-col>
+            <el-col :span="6" :offset="3">
+              <el-form-item label="凭根：" prop="credentials">
+                <el-input
+                  v-model.trim="dataForm.credentials" :disabled="routeParams.readonly"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row type="flex" class="row-bg" v-if="!routeParams.addressId">
+            <el-col :span="6" :offset="2">
+              <el-form-item label="开发商：" prop="developers">
+                <el-input v-model="dataForm.developers" :disabled="routeParams.readonly" ></el-input>
+              </el-form-item>
+            </el-col>
             <el-col :span="5" :offset="2">
               <el-form-item label="门牌号：" prop="building">
                 <el-input v-model="dataForm.building"  placeholder="楼号" :disabled="routeParams.readonly">
@@ -124,13 +159,6 @@
             </el-col>
             <el-col :span="2">
               <el-input v-model="dataForm.houseNumber" placeholder="门牌号" :disabled="routeParams.readonly"></el-input>
-            </el-col>
-          </el-row>
-          <el-row type="flex" class="row-bg" v-if="!routeParams.addressId">
-            <el-col :span="6" :offset="2">
-              <el-form-item label="开发商：" prop="developers">
-                <el-input v-model="dataForm.developers" :disabled="routeParams.readonly" ></el-input>
-              </el-form-item>
             </el-col>
           </el-row>
           <el-row type="flex" class="row-bg" v-if="!routeParams.addressId" >
@@ -225,6 +253,13 @@
         :orderId="this.params.orderId"
         @closeDialogAmount="closeDialogAmount"
       ></orderAmountList>
+      <orderPrintList
+        :openDialogPrint="this.printParams.openDialogPrint"
+        ref="orderPrintList"
+        :reload="this.printParams.reload"
+        @closeDialogPrint="closeDialogPrint"
+        @goPrint="goPrint"
+      ></orderPrintList>
       <!--底部操作按钮-->
      <!-- <el-row justify="right">
         <el-col :offset="18" :span="6">
@@ -240,16 +275,16 @@
 </template>
 
 <script>
-    import { saveOrUpdateOrder,getOrderInfo,getAddress } from '@/api/order'
+    import { saveOrUpdateOrder,getOrderInfo,getAddress,printOrder } from '@/api/order'
     import orderGoodsList from './components/order-goods-list'
     import orderAmountList from './components/order-amount-list'
+    import orderPrintList from './components/order-print-list'
     import { getOrderAddress } from '@/api/orderAddress'
     import {isPhone, isMobile} from '@/utils/validate'
     import {current_page_params} from '@/utils/constant'
-    import print from 'print-js'
     export default {
         name: 'orderDetail',
-      components: {orderGoodsList,orderAmountList},
+      components: {orderGoodsList,orderAmountList,orderPrintList},
         data() {
             var validatePhoneNumber = async (rule, value, callback) => {
                 if (!isMobile(value) && !isPhone(value)) {
@@ -280,8 +315,15 @@
                   openDialogAmount:false,
                   type:'',
               },
+              printParams:{
+                reload:'',
+                openDialogPrint:false,
+              },
                 dataForm: {
                     id:'',
+                  orderNumber:'',
+                  receipt:'',
+                  credentials:'',
                     customer:'',
                     orderDate:'',
                     province:'',
@@ -307,6 +349,9 @@
                     goods:[],
                 },
                 rules: {
+                  orderNumber: [{required: true, message: '订单号不能为空'}],
+                  receipt: [{required: true, message: '回执不能为空'}],
+                  credentials: [{required: true, message: '凭根不能为空'}],
                     customer: [{required: true, message: '客户名不能为空'}],
                     orderDate: [{required: true, message: '订货时间不能为空'}],
                     address: [{required: true, message: '地址不能为空'}],
@@ -515,23 +560,22 @@
                 }
                 this.params.openDialogAmount = false;
             },
-            goPrint(){
-                printJS({
-                    printable: 'printCons',
-                    type: 'html',
-                    //properties: [
-                    //    { field: 'name', displayName: '姓名', columnSize:`50%`},
-                    //    { field: 'sex', displayName: '性别',columnSize:`50%`},
-                    //],
-                    // header: `<p class="custom-p"> 名单 </p>`,
-                    // style: '#printCons {width: 600px;} .no-print{width: 0px} .itemText1 { width: 200px } .itemText2 { width: 200px } .itemText3 { width: 200px } .itemText4 { width: 200px }',
-                    // gridHeaderStyle:'font-size:12px; padding:3px; border:1px solid; font-weight: 100; text-align:left;',
-                    // gridStyle:'font-size:12px; padding:3px; border:1px solid; text-align:left;',
-                    // repeatTableHeader: true,
-                    // scanStyles:true,
-                    targetStyles: ['*'],
-                    // ignoreElements:['no-print','bc','gb']
-                })
+          closeDialogPrint(){
+            this.printParams.openDialogPrint = false;
+          },
+          print(){
+            this.printParams.reload = new Date().toLocaleString();
+            this.printParams.openDialogPrint = true;
+          },
+            goPrint(obj){
+              printOrder({id:this.dataForm.id,printServiceName:obj}).then(res => {
+                if (res.code === 0) {
+                  this.$message.success(res.msg);
+                  this.printParams.openDialogPrint = false;
+                }else {
+                  this.$message.error(res.msg);
+                }
+              })
             },
             async mounted() {
               if(this.routeObj){

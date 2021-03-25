@@ -60,6 +60,11 @@
             <el-input v-model="scope.row.price" :disabled="readonly" @input="clateReceivableAmount(scope.row)"></el-input>
           </template>
         </el-table-column>
+        <el-table-column prop="price" label="单位" >
+          <template slot-scope="scope">
+            <el-input v-model="scope.row.unit" :disabled="readonly" @input="clateReceivableAmount(scope.row)"></el-input>
+          </template>
+        </el-table-column>
         <el-table-column prop="number" label="数量" >
           <template slot-scope="scope">
             <el-input v-model="scope.row.number" :disabled="readonly" @input="clateReceivableAmount(scope.row)"></el-input>
