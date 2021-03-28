@@ -1,11 +1,11 @@
 <template>
-    <div id="printCons">
+    <div>
       <el-card class="operate-container" shadow="never">
         <i class="el-icon-tickets"></i>
         <span>基本信息</span>
         <el-button
           class="btn-add"
-          v-if="this.dataForm.id.length > 0"
+          v-if="this.dataForm.id.length > 0 && routeParams.readonly"
           @click="print()"
           size="mini">
           打印订单
@@ -144,10 +144,10 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row type="flex" class="row-bg" v-if="!routeParams.addressId">
-            <el-col :span="6" :offset="2">
-              <el-form-item label="开发商：" prop="developers">
-                <el-input v-model="dataForm.developers" :disabled="routeParams.readonly" ></el-input>
+          <el-row type="flex" class="row-bg" >
+            <el-col :span="6" :offset="2" >
+              <el-form-item label="开发商：" prop="developers" >
+                <el-input v-model="dataForm.developers" :disabled="routeParams.readonly || routeParams.addressId" ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="5" :offset="2">
@@ -253,13 +253,6 @@
         :orderId="this.params.orderId"
         @closeDialogAmount="closeDialogAmount"
       ></orderAmountList>
-      <orderPrintList
-        :openDialogPrint="this.printParams.openDialogPrint"
-        ref="orderPrintList"
-        :reload="this.printParams.reload"
-        @closeDialogPrint="closeDialogPrint"
-        @goPrint="goPrint"
-      ></orderPrintList>
       <!--底部操作按钮-->
      <!-- <el-row justify="right">
         <el-col :offset="18" :span="6">
@@ -278,13 +271,13 @@
     import { saveOrUpdateOrder,getOrderInfo,getAddress,printOrder } from '@/api/order'
     import orderGoodsList from './components/order-goods-list'
     import orderAmountList from './components/order-amount-list'
-    import orderPrintList from './components/order-print-list'
     import { getOrderAddress } from '@/api/orderAddress'
     import {isPhone, isMobile} from '@/utils/validate'
     import {current_page_params} from '@/utils/constant'
+    import print from 'print-js'
     export default {
         name: 'orderDetail',
-      components: {orderGoodsList,orderAmountList,orderPrintList},
+      components: {orderGoodsList,orderAmountList},
         data() {
             var validatePhoneNumber = async (rule, value, callback) => {
                 if (!isMobile(value) && !isPhone(value)) {
@@ -314,10 +307,6 @@
                 reload:'',
                   openDialogAmount:false,
                   type:'',
-              },
-              printParams:{
-                reload:'',
-                openDialogPrint:false,
               },
                 dataForm: {
                     id:'',
@@ -453,12 +442,15 @@
                     if (valid) {
                             if(this.dataForm.city == '' || this.dataForm.area == ''){
                                 this.$notify.error('请选择市或区!!');
+                                return ;
                             }
                             if(this.townOptions && this.townOptions.length > 0 && this.dataForm.town == ''){
                                 this.$notify.error('请选择街道!!');
+                                return ;
                             }
                         if(this.dataForm.houseNumber == ''){
                             this.$notify.error('门牌号不能为空!!');
+                            return ;
                         }
                         this.dataForm.houseNumber =  this.dataForm.building+"-"+this.dataForm.houseNumber
                         saveOrUpdateOrder(this.dataForm).then(res => {
@@ -560,23 +552,14 @@
                 }
                 this.params.openDialogAmount = false;
             },
-          closeDialogPrint(){
-            this.printParams.openDialogPrint = false;
-          },
           print(){
-            this.printParams.reload = new Date().toLocaleString();
-            this.printParams.openDialogPrint = true;
+            let routeUrl = this.$router.resolve({
+              path: "/orderPrint",
+              query: {id:this.dataForm.id}
+            });
+            window.open(routeUrl.href, '_blank');
+            // this.$router.push({name:'orderPrint',params:{id:this.dataForm.id}});
           },
-            goPrint(obj){
-              printOrder({id:this.dataForm.id,printServiceName:obj}).then(res => {
-                if (res.code === 0) {
-                  this.$message.success(res.msg);
-                  this.printParams.openDialogPrint = false;
-                }else {
-                  this.$message.error(res.msg);
-                }
-              })
-            },
             async mounted() {
               if(this.routeObj){
                 this.routeParams = this.routeObj;

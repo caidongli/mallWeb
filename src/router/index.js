@@ -5,9 +5,8 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '../views/layout/Layout'
-import product from './childRouter/product'
 import order from './childRouter/order'
-import coupon from './childRouter/coupon'
+import customer from './childRouter/customer'
 import userManager from './childRouter/userManager'
 /**
  * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
@@ -50,30 +49,27 @@ export const constantRouterMap = [
     component: Layout,
     redirect: '/oms/order',
     name: 'oms',
-    meta: {title: '订单', icon: 'order'},
+    meta: {title: '订单管理', icon: 'order'},
     children: [
       ...order
     ]
   },
   {
-    path: '/pms',
+    path: '/cms',
     component: Layout,
-    redirect: '/pms/product',
-    name: 'pms',
-    meta: {title: '商品', icon: 'product'},
+    redirect: '/cms/customer',
+    name: 'cms',
+    meta: {title: '客户管理', icon: 'order'},
     children: [
-      ...product,
+      ...customer
     ]
   },
   {
-    path:'/sms',
-    component: Layout,
-    redirect: '/sms/coupon',
-    name: 'sms',
-    meta: {title: '营销', icon: 'sms'},
-    children: [
-      ...coupon
-    ]
+    path: '/orderPrint',
+    name: 'orderPrint',
+    component: () => import('@/views/oms/order/components/order-print-list'),
+    meta: {title: '订单打印'},
+    hidden:true
   },
   {path: '*', redirect: '/404', hidden: true}
 ]

@@ -78,7 +78,8 @@
         </el-form>
       </div>
       </el-collapse-item>
-    </el-collapse><el-card class="operate-container" shadow="never">
+    </el-collapse>
+    <el-card class="operate-container" shadow="never">
     <i class="el-icon-tickets"></i>
     <span>数据列表</span>
     <el-button

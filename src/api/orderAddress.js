@@ -6,6 +6,8 @@ export const getOrderAddress = data => ajax('/admin/orderAddress/getOrderAddress
 
 export const queryOrderAddressList = data => ajax('/admin/orderAddress/queryOrderAddressList', data, 'POST',JSON);
 
+export const queryAddressList = data => ajax('/admin/orderAddress/queryAddressList', data, 'POST',JSON);
+
 export const delOrderAddressBatch = data => ajax('/admin/orderAddress/delOrderAddressBatch', data, 'POST',JSON);
 
 export const delOrderAddress = data => ajax('/admin/orderAddress/delOrderAddress', data, 'POST',JSON);
