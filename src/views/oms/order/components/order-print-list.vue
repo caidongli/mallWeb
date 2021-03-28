@@ -1,5 +1,5 @@
 <template>
-    <div id="printCons" style="margin-left: 300px">
+    <div id="printCons" >
       <div class="blog-content" v-html="htmlData">
       </div>
     </div>

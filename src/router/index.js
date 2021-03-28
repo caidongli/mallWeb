@@ -8,6 +8,7 @@ import Layout from '../views/layout/Layout'
 import order from './childRouter/order'
 import customer from './childRouter/customer'
 import userManager from './childRouter/userManager'
+import goods from './childRouter/goods'
 /**
  * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
  * alwaysShow: true               if set true, will always show the root menu, whatever its child routes length
@@ -64,6 +65,19 @@ export const constantRouterMap = [
       ...customer
     ]
   },
+  {
+    path: '/pms',
+    component: Layout,
+    redirect: '/pms/goods',
+    name: 'pms',
+    meta: {title: '商品管理', icon: 'order'},
+    children: [
+      ...goods
+    ]
+  },
+
+
+
   {
     path: '/orderPrint',
     name: 'orderPrint',

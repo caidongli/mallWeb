@@ -40,6 +40,11 @@
             </el-select>
           </template>
         </el-table-column>
+        <el-table-column prop="goodsCode" label="商品编码" >
+          <template slot-scope="scope">
+            <el-input v-model="scope.row.goodsCode" :disabled="readonly"></el-input>
+          </template>
+        </el-table-column>
         <el-table-column prop="goodsName" label="商品名称" >
           <template slot-scope="scope">
             <el-input v-model="scope.row.goodsName" :disabled="readonly"></el-input>
@@ -62,7 +67,7 @@
         </el-table-column>
         <el-table-column prop="price" label="单位" >
           <template slot-scope="scope">
-            <el-input v-model="scope.row.unit" :disabled="readonly" @input="clateReceivableAmount(scope.row)"></el-input>
+            <el-input v-model="scope.row.unit" :disabled="readonly" ></el-input>
           </template>
         </el-table-column>
         <el-table-column prop="number" label="数量" >
@@ -167,7 +172,7 @@
                 row.rowIndex = rowIndex;
             },
             clateReceivableAmount(row){
-                if(row.price && row.number != ''){
+                if(row.price && row.number ){
                     row.totalAmount = (row.price * row.number).toFixed(2);
                 }
             },
