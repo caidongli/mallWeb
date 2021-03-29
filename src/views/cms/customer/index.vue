@@ -181,6 +181,7 @@
           },
             add(readonly){
               this.params.readonly = readonly;
+              this.params.id = '';
               this.params.reload = new Date().toLocaleString();
               this.params.openDialogInfo = true
             },

@@ -23,11 +23,11 @@
           <el-form :inline="true" size="small" label-width="100px">
             <el-form-item label="商品名称：">
               <el-input clearable placeholder="商品名称"
-                        v-model.trim="searchFormData.goodsName"></el-input>
+                        v-model.trim="searchFormData.goodName"></el-input>
             </el-form-item>
             <el-form-item label="商品编码：">
               <el-input clearable placeholder="商品编码"
-                        v-model.trim="searchFormData.goodsCode"></el-input>
+                        v-model.trim="searchFormData.goodCode"></el-input>
             </el-form-item>
           </el-form>
         </div>
@@ -60,8 +60,8 @@
     <div class="table-container">
       <el-table :data="tableData" border stripe>
         <el-table-column label="序号" type="index" header-align="center" align="center"></el-table-column>
-        <el-table-column prop="goodsName" label="商品名称" ></el-table-column>
-        <el-table-column prop="goodsCode" label="商品编码" ></el-table-column>
+        <el-table-column prop="goodName" label="商品名称" ></el-table-column>
+        <el-table-column prop="goodCode" label="商品编码" ></el-table-column>
         <el-table-column prop="colorName" label="颜色" ></el-table-column>
         <el-table-column prop="specificationType" label="规格"></el-table-column>
         <el-table-column prop="price" label="价格"></el-table-column>
@@ -97,23 +97,21 @@
         :total="this.total"
       ></el-pagination>
     </div>
-    <customerUpdate
+    <goodsUpdate
       :openDialogInfo="this.params.openDialogInfo"
       :id="this.params.id"
       :readonly = "this.params.readonly"
       :reload="this.params.reload"
       @closeDialogInfo="closeDialogInfo"
-    ></customerUpdate>
+    ></goodsUpdate>
   </div>
 </template>
 <script>
-    import customerUpdate from './conponents/customer-update'
-    import { queryCustomerList, delCustomer } from '@/api/customer'
-    import { importExcelData } from '@/api/goods'
-    import { queryAddressList } from '@/api/orderAddress'
+    import goodsUpdate from './conponents/goods-update'
+    import { importExcelData,queryGoodsPage,delGoods } from '@/api/goods'
     export default {
-        name: "customerList",
-        components: {customerUpdate},
+        name: "goodsList",
+        components: {goodsUpdate},
         data() {
             return {
                 total: 0,
@@ -123,20 +121,19 @@
                 searchFormData: {
                   pageNum: 1,
                   pageSize: 10,
-                    goodsName: '',
-                    goodsCode:'',
+                    goodName: '',
+                    goodCode:'',
                 },
                 params:{
                   readonly:true,
                   openDialogInfo: false,
-                    id:'',
+                    id:null,
                     reload:'',
                 }
             }
         },
         created() {
             this.loadData();
-            this.loadOptionsData()
         },
         methods: {
             //分页大小，重新加载
@@ -153,7 +150,7 @@
                 this.loadData()
             },
             loadData() {
-              queryCustomerList(this.searchFormData).then(res => {
+              queryGoodsPage(this.searchFormData).then(res => {
                     if (res.code === 0) {
                         this.tableData = res.data.records;
                         this.total = res.data.total
@@ -217,17 +214,9 @@
                 })
             },
 
-          loadOptionsData() {
-            queryAddressList().then(res => {
-              if (res.code === 0) {
-                this.options = res.data
-              }else {
-                this.$message.error(res.msg);
-              }
-            })
-          },
             add(readonly){
               this.params.readonly = readonly;
+              this.params.id = null;
               this.params.reload = new Date().toLocaleString();
               this.params.openDialogInfo = true
             },
@@ -238,7 +227,7 @@
             this.params.openDialogInfo = true
             },
             del(row){
-              delCustomer({id:row.id}).then(res => {
+              delGoods({id:row.id}).then(res => {
                     if (res.code === 0) {
                         this.loadData();
                     }
@@ -248,11 +237,8 @@
                 })
             },
             handleResetSearch(){
-                this.searchFormData.developers = '';
-              this.searchFormData.houseNumber = '';
-              this.searchFormData.weChat = '';
-              this.searchFormData.tel = '';
-              this.searchFormData.customer = '';
+                this.searchFormData.goodName = '';
+              this.searchFormData.goodCode = '';
             },
           closeDialogInfo(obj){
               if(obj == 'reload'){

@@ -177,7 +177,9 @@
         this.$emit('closeDialogInfo',null);
       },
       resetForm() {
-        this.$refs[this.formName].resetFields();
+        this.$nextTick(()=>{
+          this.$refs[this.formName].resetFields();
+        })
       },
       confirmInfo(){
         this.$refs[this.formName].validate(async valid => {
@@ -208,6 +210,8 @@
     watch: {
       reload: function (newVal, oldVal) {
         if (newVal) {
+          this.dataForm = {};
+          this.resetForm();
           this.loadData();
           this.loadOptionsData();
         }

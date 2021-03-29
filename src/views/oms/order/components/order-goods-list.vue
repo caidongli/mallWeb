@@ -40,9 +40,19 @@
             </el-select>
           </template>
         </el-table-column>
-        <el-table-column prop="goodsCode" label="商品编码" >
+        <el-table-column prop="goodsCode" label="商品编码" width="150px">
           <template slot-scope="scope">
-            <el-input v-model="scope.row.goodsCode" :disabled="readonly"></el-input>
+            <el-autocomplete
+              v-model="scope.row.goodsCode"
+              :fetch-suggestions="querySearchAsync"
+              placeholder="请输入内容"
+              @select="handleSelect"
+              :disabled="readonly"
+            >
+              <template slot-scope="{ item }">
+                <div class="name" style="color:black">{{ item.value = item.goodCode }}</div>
+              </template>
+            </el-autocomplete>
           </template>
         </el-table-column>
         <el-table-column prop="goodsName" label="商品名称" >
@@ -80,7 +90,7 @@
             <el-input v-model="scope.row.totalAmount" :disabled="readonly"></el-input>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="480" align="center">
+        <el-table-column label="操作" width="360" align="center">
           <template slot-scope="scope">
             <p>
               <el-button
@@ -126,6 +136,7 @@
 </template>
 <script>
   import { queryOrderGoodsList,delGoods,saveOrUpdateGoods,saveOrUBatchGoods } from '@/api/order'
+  import { queryGoodsList } from '@/api/goods'
   import goodsUpdate from './order-goods-update'
 
     export default {
@@ -134,10 +145,14 @@
         data() {
             return {
                 tableData: [], //表格数据
+                goodsCodeData:[], //商品编号数据
                 searchFormData: {
                   goodsName: '',
                   orderId:'',
                 },
+              searchGoodsData:{
+                goodCode: '',
+              },
               totalAmount:'',
                 options: [{
                     value: 'cp',
@@ -195,6 +210,29 @@
                 }
               })
             },
+          loadGoodsCodeData(){
+            queryGoodsList(this.searchGoodsData).then(res => {
+              if (res.code === 0) {
+                this.goodsCodeData = res.data;
+              }
+            })
+          },
+          querySearchAsync(queryString, cb) {
+            var restaurants = this.goodsCodeData;
+            var results = queryString ? restaurants.filter(this.createStateFilter(queryString)) : restaurants;
+            clearTimeout(this.timeout);
+            this.timeout = setTimeout(() => {
+              cb(results);
+            }, 1000 * Math.random());
+          },
+          createStateFilter(queryString) {
+            return (state) => {
+              return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+            };
+          },
+          handleSelect(item) {
+            console.log(item);
+          },
           formatterType:function(row, column) {
             if (row.goodsType === 'cp') {
               return "成品";
@@ -279,6 +317,7 @@
                 if (newVal) {
                     this.tableData = [];
                     this.loadData(true);
+                    this.loadGoodsCodeData();
                 }
             },
         },
