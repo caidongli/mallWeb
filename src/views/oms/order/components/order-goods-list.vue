@@ -40,19 +40,11 @@
             </el-select>
           </template>
         </el-table-column>
-        <el-table-column prop="goodsCode" label="商品编码" width="150px">
+        <el-table-column prop="goodsCode" label="商品编码" width="220px">
           <template slot-scope="scope">
-            <el-autocomplete
-              v-model="scope.row.goodsCode"
-              :fetch-suggestions="querySearchAsync"
-              placeholder="请输入内容"
-              @select="handleSelect"
-              :disabled="readonly"
-            >
-              <template slot-scope="{ item }">
-                <div class="name" style="color:black">{{ item.value = item.goodCode }}</div>
-              </template>
-            </el-autocomplete>
+            <el-input v-model="scope.row.goodsCode" :disabled="readonly">
+              <el-button slot="append" icon="el-icon-search" @click="choose(scope.$index)"></el-button>
+            </el-input>
           </template>
         </el-table-column>
         <el-table-column prop="goodsName" label="商品名称" >
@@ -132,16 +124,24 @@
       :openDialogInfo="this.params.openDialogInfo"
       @closeDialogInfo="closeDialogInfo"
     ></goodsUpdate>
+    <chooseGoods
+      :openDialogChoose="this.chooseGoodsParams.openDialogChoose"
+      :reload="this.chooseGoodsParams.reload"
+      :index="this.chooseGoodsParams.index"
+      @closeOpenDialog="closeOpenDialog"
+      @chooseGoods="chooseGoods"
+    ></chooseGoods>
   </div>
 </template>
 <script>
   import { queryOrderGoodsList,delGoods,saveOrUpdateGoods,saveOrUBatchGoods } from '@/api/order'
   import { queryGoodsList } from '@/api/goods'
   import goodsUpdate from './order-goods-update'
+  import chooseGoods from './choose-goods'
 
     export default {
         name: 'choose-goods-list',
-      components: {goodsUpdate},
+      components: {goodsUpdate,chooseGoods},
         data() {
             return {
                 tableData: [], //表格数据
@@ -173,6 +173,11 @@
                     price: '',
                     totalAmount: '',
                     goodsType: '',
+                },
+                chooseGoodsParams:{
+                    reload:'',
+                    openDialogChoose:false,
+                    index:null,
                 },
               params:{
                 reload:'',
@@ -216,22 +221,6 @@
                 this.goodsCodeData = res.data;
               }
             })
-          },
-          querySearchAsync(queryString, cb) {
-            var restaurants = this.goodsCodeData;
-            var results = queryString ? restaurants.filter(this.createStateFilter(queryString)) : restaurants;
-            clearTimeout(this.timeout);
-            this.timeout = setTimeout(() => {
-              cb(results);
-            }, 1000 * Math.random());
-          },
-          createStateFilter(queryString) {
-            return (state) => {
-              return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
-            };
-          },
-          handleSelect(item) {
-            console.log(item);
           },
           formatterType:function(row, column) {
             if (row.goodsType === 'cp') {
@@ -308,6 +297,21 @@
                 this.loadData();
             }
           },
+            choose(index){
+                this.chooseGoodsParams.openDialogChoose = true;
+                this.chooseGoodsParams.index = index;
+                this.chooseGoodsParams.reload = new Date().toLocaleString();
+            },
+            closeOpenDialog(obj){
+                this.chooseGoodsParams.openDialogChoose = false;
+            },
+            chooseGoods(obj){
+                console.log(this.tableData)
+                /*const data = this.tableData.filter(item => {
+                    return obj.index != '1'
+                })*/
+                this.closeOpenDialog();
+            },
           handleResetSearch(){
             this.searchFormData.goodsName = '';
           },
