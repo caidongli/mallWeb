@@ -23,11 +23,11 @@
           <el-form :inline="true" size="small" label-width="100px">
             <el-form-item label="商品名称：">
               <el-input clearable placeholder="商品名称"
-                        v-model.trim="searchFormData.goodName"></el-input>
+                        v-model.trim="searchFormData.goodsName"></el-input>
             </el-form-item>
             <el-form-item label="商品编码：">
               <el-input clearable placeholder="商品编码"
-                        v-model.trim="searchFormData.goodCode"></el-input>
+                        v-model.trim="searchFormData.goodsCode"></el-input>
             </el-form-item>
           </el-form>
         </div>
@@ -60,8 +60,8 @@
     <div class="table-container">
       <el-table :data="tableData" border stripe>
         <el-table-column label="序号" type="index" header-align="center" align="center"></el-table-column>
-        <el-table-column prop="goodName" label="商品名称" ></el-table-column>
-        <el-table-column prop="goodCode" label="商品编码" ></el-table-column>
+        <el-table-column prop="goodsName" label="商品名称" ></el-table-column>
+        <el-table-column prop="goodsCode" label="商品编码" ></el-table-column>
         <el-table-column prop="colorName" label="颜色" ></el-table-column>
         <el-table-column prop="specificationType" label="规格"></el-table-column>
         <el-table-column prop="price" label="价格"></el-table-column>
@@ -121,8 +121,8 @@
                 searchFormData: {
                   pageNum: 1,
                   pageSize: 10,
-                    goodName: '',
-                    goodCode:'',
+                    goodsName: '',
+                    goodsCode:'',
                 },
                 params:{
                   readonly:true,
@@ -237,8 +237,8 @@
                 })
             },
             handleResetSearch(){
-                this.searchFormData.goodName = '';
-              this.searchFormData.goodCode = '';
+                this.searchFormData.goodsName = '';
+              this.searchFormData.goodsCode = '';
             },
           closeDialogInfo(obj){
               if(obj == 'reload'){

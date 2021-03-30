@@ -43,11 +43,11 @@
         <el-table-column prop="goodsCode" label="商品编码" width="220px">
           <template slot-scope="scope">
             <el-input v-model="scope.row.goodsCode" :disabled="readonly">
-              <el-button slot="append" icon="el-icon-search" @click="choose(scope.$index)"></el-button>
+              <el-button slot="append" icon="el-icon-search" @click="choose(scope.row)"></el-button>
             </el-input>
           </template>
         </el-table-column>
-        <el-table-column prop="goodsName" label="商品名称" >
+        <el-table-column prop="goodsName" label="商品名称" width="130px">
           <template slot-scope="scope">
             <el-input v-model="scope.row.goodsName" :disabled="readonly"></el-input>
           </template>
@@ -127,7 +127,7 @@
     <chooseGoods
       :openDialogChoose="this.chooseGoodsParams.openDialogChoose"
       :reload="this.chooseGoodsParams.reload"
-      :index="this.chooseGoodsParams.index"
+      :targetId="this.chooseGoodsParams.targetId"
       @closeOpenDialog="closeOpenDialog"
       @chooseGoods="chooseGoods"
     ></chooseGoods>
@@ -164,6 +164,7 @@
                 dataForm: {
                     id:'',
                     orderId: '',
+                  targetId:0,
                     goodsCode: '',
                     goodsName: '',
                     colorCode: '',
@@ -173,11 +174,12 @@
                     price: '',
                     totalAmount: '',
                     goodsType: '',
+                  unit:'',
                 },
                 chooseGoodsParams:{
                     reload:'',
                     openDialogChoose:false,
-                    index:null,
+                  targetId:0,
                 },
               params:{
                 reload:'',
@@ -232,9 +234,10 @@
             }
           },
           add(readonly){
-                let obj = {};
-                this.$set(obj,'orderId',this.orderId);
-                this.tableData.push(obj)
+            let obj = JSON.parse(JSON.stringify(this.dataForm));
+            obj.orderId = this.orderId;
+            obj.targetId = new Date().getTime();
+            this.tableData.push(obj)
           },
             save(row){
                 saveOrUpdateGoods(row).then(res => {
@@ -297,19 +300,25 @@
                 this.loadData();
             }
           },
-            choose(index){
+            choose(row){
                 this.chooseGoodsParams.openDialogChoose = true;
-                this.chooseGoodsParams.index = index;
+                this.chooseGoodsParams.targetId = row.targetId;
                 this.chooseGoodsParams.reload = new Date().toLocaleString();
             },
             closeOpenDialog(obj){
                 this.chooseGoodsParams.openDialogChoose = false;
             },
             chooseGoods(obj){
-                console.log(this.tableData)
-                /*const data = this.tableData.filter(item => {
-                    return obj.index != '1'
-                })*/
+                this.tableData.filter(item => {
+                  if(item.targetId == obj.targetId){
+                    item.goodsName= obj.goodsName
+                    item.goodsCode= obj.goodsCode
+                    item.colorName= obj.colorName
+                    item.specificationType= obj.specificationType
+                    item.price= obj.price
+                    this.$forceUpdate()
+                  }
+                })
                 this.closeOpenDialog();
             },
           handleResetSearch(){

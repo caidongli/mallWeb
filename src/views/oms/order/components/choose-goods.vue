@@ -11,11 +11,11 @@
         <el-form :inline="true" class="demo-form-inline" align="right">
           <el-form-item label="商品名称：">
             <el-input clearable placeholder="商品名称"
-                      v-model.trim="searchFormData.goodName"></el-input>
+                      v-model.trim="searchFormData.goodsName"></el-input>
           </el-form-item>
           <el-form-item label="商品编码：">
             <el-input clearable placeholder="商品编码"
-                      v-model.trim="searchFormData.goodCode"></el-input>
+                      v-model.trim="searchFormData.goodsCode"></el-input>
           </el-form-item>
           <el-form-item class="input-bottom">
             <el-button type="primary" size="mini" @click="loadData(true)">查&nbsp;&nbsp;询</el-button>
@@ -27,8 +27,8 @@
                       ref="multipleTable"
                       :row-class-name="rowIndex" stripe>
               <el-table-column label="序号" type="index" header-align="center" align="center"></el-table-column>
-              <el-table-column prop="goodName" label="商品名称" ></el-table-column>
-              <el-table-column prop="goodCode" label="商品编码" ></el-table-column>
+              <el-table-column prop="goodsName" label="商品名称" ></el-table-column>
+              <el-table-column prop="goodsCode" label="商品编码" ></el-table-column>
               <el-table-column prop="colorName" label="颜色" ></el-table-column>
               <el-table-column prop="specificationType" label="规格"></el-table-column>
               <el-table-column prop="price" label="价格"></el-table-column>
@@ -69,8 +69,8 @@
                 total: 0,
                 tableData: [], //表格数据
                 searchFormData: {
-                    goodName: '',
-                    goodCode:'',
+                    goodsName: '',
+                    goodsCode:'',
                     pageNum:1,
                     pageSize: 10,
                 },
@@ -110,7 +110,7 @@
                 })
             },
             choose(row){
-                this.$set(row,'index',this.index);
+                this.$set(row,'targetId',this.targetId);
                 this.$emit('chooseGoods', row);
             },
         },
@@ -131,9 +131,9 @@
                 type: String,
                 default: "",
             },
-            index: {
+          targetId: {
                 type: Number,
-                default: null,
+                default: 0,
             },
         }
 
