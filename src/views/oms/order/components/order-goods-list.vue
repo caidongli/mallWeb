@@ -280,7 +280,8 @@
       goodsDelete(index,row){
         this.$confirm('确认删除？', '警告', {type: "warning"})
           .then(async () => {
-              if(row.id != null){
+              if(row.id != null && row.id != ''){
+                  console.log(row.id)
                   delGoods({id:row.id}).then(res => {
                       if (res.code === 0) {
                           this.loadData();
