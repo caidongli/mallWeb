@@ -82,7 +82,7 @@
             <el-input v-model="scope.row.totalAmount" :disabled="readonly"></el-input>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="360" align="center">
+        <el-table-column label="操作" width="300" align="center">
           <template slot-scope="scope">
             <p>
               <el-button

@@ -42,7 +42,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="6" :offset="3">
-                  <el-form-item label="回执：" prop="receipt">
+                  <el-form-item label="收据号：" prop="receipt">
                     <el-input
                       v-model.trim="dataForm.receipt" :disabled="routeParams.readonly"></el-input>
                   </el-form-item>
@@ -91,12 +91,20 @@
         <el-row type="flex" class="row-bg" >
           <el-col :span="6" :offset="2">
             <el-form-item label="支付方式：" prop="payWay">
-              <el-input
-                v-model.trim="dataForm.payWay" :disabled="routeParams.readonly"></el-input>
+              <el-select v-model="dataForm.payWay" clearable
+                         placeholder="支付方式"
+                         :disabled="routeParams.readonly">
+                <el-option
+                  v-for="item in payWayOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.label">
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="6" :offset="3">
-            <el-form-item label="合计金额：" prop="totalAmount">
+            <el-form-item label="合计原价：" prop="totalAmount">
               <el-input
                 v-model.trim="dataForm.totalAmount" :disabled="routeParams.readonly"></el-input>
             </el-form-item>
@@ -138,7 +146,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="6" :offset="3">
-              <el-form-item label="凭根：" prop="credentials">
+              <el-form-item label="凭根：">
                 <el-input
                   v-model.trim="dataForm.credentials" :disabled="routeParams.readonly"></el-input>
               </el-form-item>
@@ -298,6 +306,27 @@
                     orderId:'',
                     goodsName:'',
                 },
+                payWayOptions: [
+                    {
+                        value: 'sdns',
+                        label: '银行存款--顺德农商'
+                    },{
+                        value: 'nyyh',
+                        label: '银行存款--农业银行'
+                    },{
+                        value: 'jsyh',
+                        label: '银行存款--建设银行'
+                    },{
+                        value: 'zfb',
+                        label: '网银-支付宝'
+                    },{
+                        value: 'wxqb',
+                        label: '微信钱包'
+                    },{
+                        value: 'qt',
+                        label: '其他'
+                    }
+                ],
                 provinceOptions:[],
                 cityOptions:[],
                 areaOptions:[],
@@ -339,8 +368,7 @@
                 },
                 rules: {
                   orderNumber: [{required: true, message: '订单号不能为空'}],
-                  receipt: [{required: true, message: '回执不能为空'}],
-                  credentials: [{required: true, message: '凭根不能为空'}],
+                  receipt: [{required: true, message: '收据号不能为空'}],
                     customer: [{required: true, message: '客户名不能为空'}],
                     orderDate: [{required: true, message: '订货时间不能为空'}],
                     address: [{required: true, message: '地址不能为空'}],
@@ -354,7 +382,7 @@
                     salesman: [{required: true, message: '销售员能为空'}],
                     payWay: [{required: true, message: '支付方式不能为空'}],
                     preReceivableRatio: [{required: true, message: '预收款比例不能为空'}],
-                    totalAmount: [{required: true, message: '合计金额不能为空'}],
+                    totalAmount: [{required: true, message: '合计原价不能为空'}],
                     receivableAmount: [{required: true, message: '应收金额不能为空'}],
                     preReceivableAmount: [{required: true, message: '预收金额不能为空'}],
                     repayAmount: [{required: true, message: '补交金额不能为空'}],
