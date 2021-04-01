@@ -22,36 +22,36 @@
         </el-row>
         <el-row type="flex" class="row-bg" >
           <el-col :span="5" :offset="2">
-            <el-form-item label="地址：" prop="province">
-              <el-select v-model="dataForm.province" clearable
+            <el-form-item label="地址：" prop="provinceInfo">
+              <el-select v-model="dataForm.provinceInfo" clearable
                          placeholder="省份"
                          @change="handleProvinceChange">
                 <el-option
                   v-for="item in provinceOptions"
                   :key="item.code"
                   :label="item.name"
-                  :value="item.name">
+                  :value="item.code+':'+item.name">
                 </el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="3" :offset="1">
-            <el-select v-model="dataForm.city" clearable placeholder="市" @change="handleCityChange" >
+            <el-select v-model="dataForm.cityInfo" clearable placeholder="市" @change="handleCityChange" >
               <el-option
                 v-for="item in cityOptions"
                 :key="item.code"
                 :label="item.name"
-                :value="item.name">
+                :value="item.code+':'+item.name">
               </el-option>
             </el-select>
           </el-col>
           <el-col :span="3" :offset="1">
-            <el-select v-model="dataForm.area" clearable placeholder="区" @change="handleAreaChange" >
+            <el-select v-model="dataForm.areaInfo" clearable placeholder="区" @change="handleAreaChange" >
               <el-option
                 v-for="item in areaOptions"
                 :key="item.code"
                 :label="item.name"
-                :value="item.name">
+                :value="item.code+':'+item.name">
               </el-option>
             </el-select>
           </el-col>
@@ -114,15 +114,21 @@
                     id:'',
                     companyName:'',
                     address:'',
+                  provinceInfo:'',
                     province:'',
+                    provinceCode:'',
+                  cityInfo:'',
                     city:'',
+                    cityCode:'',
+                  areaInfo:'',
                     area:'',
+                    areaCode:'',
                     town:'',
                 },
                 rules: {
                     companyName: [{required: true, message: '客户名不能为空'}],
                     address: [{required: true, message: '地址不能为空'}],
-                    province: [{required: true, message: '省不能为空'}],
+                  provinceInfo: [{required: true, message: '省不能为空'}],
                 }
             };
         },
@@ -138,14 +144,19 @@
                     getOrderAddress({id:this.routeParams.id}).then(res => {
                         if (res.code === 0) {
                             this.dataForm = res.data;
+                            this.dataForm.provinceInfo = res.data.provinceCode+':'+res.data.province
+                          this.dataForm.cityInfo = res.data.cityCode+':'+res.data.city
+                          this.dataForm.areaInfo = res.data.areaCode+':'+res.data.area
+                          this.loadAddress(res.data);
                         }else {
                             this.$message.error(res.msg);
                         }
                     })
                 }else{
+                  this.loadAddress(this.dataForm);
                 }
             },
-            loadAddress(){
+            loadAddress(data){
                 getAddress({type:'province'}).then(res => {
                     if (res.code === 0) {
                         this.provinceOptions = res.data;
@@ -155,20 +166,49 @@
                 }).catch(() => {
                     this.$message.error('请求错误!');
                     this.loading = false
-                })
+                });
+                if(data.provinceCode != null && data.provinceCode != ''){
+                  getAddress({type:'city',code:data.provinceCode}).then(res => {
+                    if (res.code === 0) {
+                      this.cityOptions = res.data;
+                    }
+                  });
+                }
+              if(data.cityCode != null && data.cityCode != ''){
+                getAddress({type:'area',code:data.cityCode}).then(res => {
+                  if (res.code === 0) {
+                    this.areaOptions = res.data;
+                  }
+                });
+              }
+              if(data.areaCode != null && data.areaCode != ''){
+                getAddress({type:'town',code:data.areaCode}).then(res => {
+                  if (res.code === 0) {
+                    this.townOptions = res.data;
+                  }
+                });
+              }
             },
             saveOrUpdate(){
                 this.$refs[this.formName].validate(async valid => {
                     if (valid) {
-                        if(this.dataForm.city == '' || this.dataForm.area == ''){
+                        if(this.dataForm.cityInfo == '' || this.dataForm.areaInfo == ''){
                             this.$notify.error('请选择市或区!!');
+                            return ;
                         }
                         if(this.townOptions && this.townOptions.length > 0 && this.dataForm.town == ''){
                             this.$notify.error('请选择街道!!');
+                          return ;
                         }
+                      this.dataForm.provinceCode = this.dataForm.provinceInfo.split(":")[0]
+                      this.dataForm.province = this.dataForm.provinceInfo.split(":")[1]
+                      this.dataForm.areaCode = this.dataForm.areaInfo.split(":")[0]
+                      this.dataForm.area = this.dataForm.areaInfo.split(":")[1]
+                      this.dataForm.cityCode = this.dataForm.cityInfo.split(":")[0]
+                      this.dataForm.city = this.dataForm.cityInfo.split(":")[1]
                         saveOrUpdateAddress(this.dataForm).then(res => {
                             if (res.code === 0) {
-                                this.dataForm = res.data;
+                                this.loadData();
                                 this.$message.success(res.msg);
                             } else {
                                 this.$message.error(res.msg);
@@ -189,10 +229,7 @@
                 if(value == null || value == ''){
                     return;
                 }
-                let code = this.provinceOptions.find((item)=> {
-                    return item.name === value;
-                }).code
-                getAddress({type:'city',code:code}).then(res => {
+                getAddress({type:'city',code:value.split(":")[0]}).then(res => {
                     if (res.code === 0) {
                         this.cityOptions = res.data;
                         this.areaOptions = [];
@@ -201,8 +238,8 @@
                         this.cityOptions = [];
                         this.$message.error(res.msg);
                     }
-                    this.dataForm.city = '';
-                    this.dataForm.area = '';
+                    this.dataForm.cityInfo = '';
+                    this.dataForm.areaInfo = '';
                     this.dataForm.town = '';
                 }).catch(() => {
                     this.$message.error('请求错误!');
@@ -213,10 +250,7 @@
                 if(value == null || value == ''){
                     return;
                 }
-                let code = this.cityOptions.find((item)=> {
-                    return item.name === value;
-                }).code
-                getAddress({type:'area',code:code}).then(res => {
+                getAddress({type:'area',code:value.split(":")[0]}).then(res => {
                     if (res.code === 0) {
                         this.areaOptions = res.data;
                         this.townOptions = [];
@@ -225,7 +259,7 @@
                         this.townOptions = [];
                         this.$message.error(res.msg);
                     }
-                    this.dataForm.area = '';
+                    this.dataForm.areaInfo = '';
                     this.dataForm.town = '';
                 }).catch(() => {
                     this.$message.error('请求错误!');
@@ -236,10 +270,7 @@
                 if(value == null || value == ''){
                     return;
                 }
-                let code = this.areaOptions.find((item)=> {
-                    return item.name === value;
-                }).code
-                getAddress({type:'town',code:code}).then(res => {
+                getAddress({type:'town',code:value.split(":")[0]}).then(res => {
                     if (res.code === 0) {
                         this.townOptions = res.data;
                     }else {
@@ -255,7 +286,6 @@
             async mounted() {
                 this.routeParams = JSON.parse(this.commonJs.getStore(current_page_params));
                 this.loadData();
-                this.loadAddress();
             },
         },
         watch: {

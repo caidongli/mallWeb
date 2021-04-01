@@ -35,8 +35,8 @@
         <el-col :span="8">
           <div class="total-frame">
             <img :src="img_home_yesterday_amount" class="total-icon">
-            <div class="total-title">昨日销售总额</div>
-            <div class="total-value">￥{{dataForm.yesterdayAmount}}</div>
+            <div class="total-title">本月销售总额</div>
+            <div class="total-value">￥{{dataForm.monthAmount}}</div>
           </div>
         </el-col>
       </el-row>
