@@ -6,6 +6,7 @@
     </el-steps>
     <OrderDetail
       :routeObj = "this.routeParams "
+      :reload = "this.routeParams.reload"
       v-show="showStatus[0]"
       @nextStep="nextStep">
     </OrderDetail>
@@ -33,6 +34,7 @@
           isAdd:false,
           id:'',
           addressId:'',
+            reload:'',
         },
         params:{
           orderId:'',
@@ -57,6 +59,7 @@
         if (this.active > 0 && this.active < this.showStatus.length) {
           this.active--;
           this.hideAll();
+          this.routeParams.reload = new Date().toLocaleString();
           this.showStatus[this.active] = true;
         }
       },

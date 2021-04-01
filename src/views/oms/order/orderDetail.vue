@@ -631,11 +631,21 @@
             },
         },
         watch: {
+            reload: function (newVal, oldVal) {
+                if (newVal) {
+                    this.tableData = [];
+                    this.loadData();
+                }
+            },
         },
       props: {
         routeObj: {
           type: Object,
         },
+          reload: {
+              type: String,
+              default: "",
+          },
         valueFormat: {
           type: String,
           default: "yyyy-MM-dd"
