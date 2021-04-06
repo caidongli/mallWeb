@@ -19,7 +19,7 @@
           <el-col :span="20">
             <el-form-item label="商品名称：" prop="goodName">
               <el-input
-                v-model="dataForm.goodName"></el-input>
+                v-model="dataForm.goodsName"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -27,7 +27,7 @@
           <el-col :span="20">
           <el-form-item label="商品编码：" prop="goodCode">
             <el-input
-              v-model.trim="dataForm.goodCode"></el-input>
+              v-model.trim="dataForm.goodsCode"></el-input>
           </el-form-item>
           </el-col>
         </el-row>
@@ -88,16 +88,16 @@
         formName: 'dataForm',
         dataForm: {
           id:'',
-          goodCode: '',
-          goodName:'',
+          goodsCode: '',
+          goodsName:'',
           colorName:'',
           specificationType:'',
           price:'',
           remark:'',
         },
         rules: {
-          goodName: [{required: true, message: '客户姓名不能为空'}],
-          goodCode: [{required: true, message: '客户姓名不能为空'}],
+          goodsName: [{required: true, message: '商品名称不能为空'}],
+          goodsCode: [{required: true, message: '商品编码不能为空'}],
           price: [{required: true, message: '开发商不能为空'}],
         }
       };

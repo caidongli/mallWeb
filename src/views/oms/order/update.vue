@@ -14,6 +14,7 @@
       v-show="showStatus[1]"
       :reload="this.params.reload"
       :orderId="this.params.orderId"
+      :amount="this.params.totalAmount"
       @prevStep="prevStep">
     </OrderGoodsList>
   </div>
@@ -39,6 +40,7 @@
         params:{
           orderId:'',
           reload:'',
+          totalAmount:'',
         },
         showStatus: [true, false]
       }
@@ -68,7 +70,8 @@
           this.active++;
           this.hideAll();
           this.params.reload = new Date().toLocaleString();
-          this.params.orderId = obj;
+          this.params.orderId = obj.id;
+          this.params.totalAmount = obj.totalAmount.toString();
           this.showStatus[this.active] = true;
         }
       },

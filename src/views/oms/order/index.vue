@@ -21,9 +21,17 @@
       </div>
       <div style="margin-top: 15px">
         <el-form :inline="true" size="small" label-width="100px">
+          <el-form-item label="订单号：">
+            <el-input clearable placeholder="订单号"
+                      v-model.trim="searchFormData.orderNumber"></el-input>
+          </el-form-item>
           <el-form-item label="客户名称：">
             <el-input clearable placeholder="客户名称"
                       v-model.trim="searchFormData.customer"></el-input>
+          </el-form-item>
+          <el-form-item label="电话号码：">
+            <el-input clearable placeholder="电话号码"
+                      v-model.trim="searchFormData.telephone"></el-input>
           </el-form-item>
           <el-form-item label="设计师：">
             <el-input clearable placeholder="设计师"
@@ -33,13 +41,23 @@
             <el-input clearable placeholder="销售人员"
                       v-model.trim="searchFormData.salesman"></el-input>
           </el-form-item>
-          <el-form-item label="电话号码：">
-            <el-input clearable placeholder="电话号码"
-                      v-model.trim="searchFormData.telephone"></el-input>
+          <el-form-item label="开发商：">
+            <el-input clearable placeholder="开发商"
+                      v-model.trim="searchFormData.developers"></el-input>
           </el-form-item>
-          <el-form-item label="地址：">
-            <el-input clearable placeholder="地址"
-                      v-model.trim="searchFormData.address"></el-input>
+          <el-form-item label="房号：">
+            <el-input clearable placeholder="房号"
+                      v-model.trim="searchFormData.houseNumber"></el-input>
+          </el-form-item>
+          <el-form-item label="订单状态：">
+            <el-select v-model="searchFormData.orderStatus" @change="loadData()" placeholder="订单状态" clearable>
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="订货时间：">
             <el-date-picker
@@ -65,16 +83,6 @@
               align="right">
             </el-date-picker>
           </el-form-item>
-          <el-form-item label="订单状态：">
-            <el-select v-model="searchFormData.orderStatus" @change="loadData()" placeholder="订单状态" clearable>
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
         </el-form>
       </div>
       </el-collapse-item>
@@ -93,15 +101,14 @@
     <div class="table-container">
       <el-table :data="tableData" border stripe>
         <el-table-column label="序号" type="index" header-align="center" align="center"></el-table-column>
+        <el-table-column prop="orderNumber" label="订单号" ></el-table-column>
         <el-table-column prop="customer" label="客户名称" ></el-table-column>
-        <el-table-column prop="orderDate" label="订货日期" ></el-table-column>
-        <el-table-column prop="address" label="地址" ></el-table-column>
         <el-table-column prop="telephone" label="电话"></el-table-column>
-        <el-table-column prop="preDeliveryData" label="预交货时间"></el-table-column>
         <el-table-column prop="designer" label="设计师"></el-table-column>
         <el-table-column prop="salesman" label="销售人员"></el-table-column>
-        <el-table-column prop="payWay" label="支付方式"></el-table-column>
-        <el-table-column label="操作" width="360" align="center">
+        <el-table-column prop="developers" label="开发商" ></el-table-column>
+        <el-table-column prop="houseNumber" label="房号" ></el-table-column>
+        <el-table-column label="操作" width="240" align="center">
           <template slot-scope="scope">
             <p>
               <el-button
@@ -173,9 +180,13 @@
                     label: '未关闭'
                 }],
                 searchFormData: {
+                  orderNumber:'',
+                  orderName:'',
                     customer: '',
                     designer:'',
                     salesman:'',
+                  developers:'',
+                  houseNumber:'',
                     payWay:'',
                     address:'',
                     orderStatus:'',

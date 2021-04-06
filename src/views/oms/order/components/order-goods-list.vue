@@ -109,6 +109,16 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-card class="operate-container" shadow="never">
+        <span
+          style="float: right;margin-right: 15px">
+          商品合计金额：{{this.totalAmount}}
+        </span>
+        <span
+          style="float: right;margin-right: 30px">
+          订单合计金额：{{this.amount}}
+        </span>
+      </el-card>
       <el-row type="flex" class="row-bg" style="margin-top: 15px" v-if="!readonly">
         <el-col :span="8" :offset="9">
           <el-button type="primary" size="medium" @click="prevStep()" >上一步</el-button>
@@ -153,7 +163,7 @@
               searchGoodsData:{
                 goodCode: '',
               },
-              totalAmount:'',
+              totalAmount:0,
                 options: [{
                     value: 'cp',
                     label: '成品'
@@ -214,6 +224,12 @@
                           this.tableData.push(item)
                       })
                   }
+                  this.totalAmount = 0;
+                  this.tableData.forEach(item=>{
+                    if(item.totalAmount != null && item.totalAmount != ''){
+                      this.totalAmount = this.totalAmount+ item.totalAmount;
+                    }
+                  })
                 }
               })
             },
@@ -246,7 +262,6 @@
                         if(!row.id || row.id == null){
                             this.$set(row,'id',res.data.id)
                         }
-                        this.loadData();
                     } else {
                         this.$message.error(res.msg);
                     }
@@ -281,10 +296,9 @@
         this.$confirm('确认删除？', '警告', {type: "warning"})
           .then(async () => {
               if(row.id != null && row.id != ''){
-                  console.log(row.id)
                   delGoods({id:row.id}).then(res => {
                       if (res.code === 0) {
-                          this.loadData();
+                        this.tableData.splice(index, 1);
                       }
                   })
               }else {
@@ -334,6 +348,17 @@
                     this.loadGoodsCodeData();
                 }
             },
+          tableData:{
+            handler: function (newVal) {
+              this.totalAmount = 0;
+                  this.tableData.forEach(item=>{
+                    if(item.totalAmount != null && item.totalAmount != ''){
+                      this.totalAmount = this.totalAmount+ parseFloat(item.totalAmount);
+                    }
+                  })
+            },
+            deep: true    //深度监听
+          }
         },
         //与 上级组件通信
         props: {
@@ -342,6 +367,10 @@
                 default: "",
             },
           orderId: {
+            type: String,
+            default: "",
+          },
+          amount: {
             type: String,
             default: "",
           },

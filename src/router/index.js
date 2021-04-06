@@ -9,6 +9,7 @@ import order from './childRouter/order'
 import customer from './childRouter/customer'
 import userManager from './childRouter/userManager'
 import goods from './childRouter/goods'
+import cost from './childRouter/cost'
 /**
  * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
  * alwaysShow: true               if set true, will always show the root menu, whatever its child routes length
@@ -73,6 +74,16 @@ export const constantRouterMap = [
     meta: {title: '商品管理', icon: 'order'},
     children: [
       ...goods
+    ]
+  },
+  {
+    path: '/cost',
+    component: Layout,
+    redirect: '/cost/cost',
+    name: 'cost',
+    meta: {title: '成本管理', icon: 'order'},
+    children: [
+      ...cost
     ]
   },
 
