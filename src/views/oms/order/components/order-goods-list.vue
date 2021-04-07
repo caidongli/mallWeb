@@ -97,7 +97,7 @@
               </el-button>
               <el-button
                 size="mini"
-                @click="orderShow(scope.$index, scope.row,true)">查看
+                @click="orderShow(scope.$index, scope.row,true)">图片
               </el-button>
               <el-button
                 v-if="!readonly"
@@ -141,6 +141,12 @@
       @closeOpenDialog="closeOpenDialog"
       @chooseGoods="chooseGoods"
     ></chooseGoods>
+    <goodsAttachment
+      :openDialogAttach="this.attachmentParams.openDialogAttach"
+      :reload="this.attachmentParams.reload"
+      :id="this.attachmentParams.id"
+      @closeAttachDialog="closeAttachDialog"
+    ></goodsAttachment>
   </div>
 </template>
 <script>
@@ -148,10 +154,11 @@
   import { queryGoodsList } from '@/api/goods'
   import goodsUpdate from './order-goods-update'
   import chooseGoods from './choose-goods'
+  import goodsAttachment from './goods-attachment'
 
     export default {
         name: 'choose-goods-list',
-      components: {goodsUpdate,chooseGoods},
+      components: {goodsUpdate,chooseGoods,goodsAttachment},
         data() {
             return {
                 tableData: [], //表格数据
@@ -190,6 +197,12 @@
                     reload:'',
                     openDialogChoose:false,
                   targetId:0,
+                },
+                attachmentParams:{
+                    reload:'',
+                    readonly:true,
+                    openDialogAttach:false,
+                    id:'',
                 },
               params:{
                 reload:'',
@@ -274,10 +287,10 @@
               this.params.openDialogInfo = true;
             },
           orderShow(index,row,readonly){
-            this.params.id = row.id;
-            this.params.readonly = readonly;
-            this.params.reload = new Date().toLocaleString();
-            this.params.openDialogInfo = true;
+            this.attachmentParams.id = row.id;
+            this.attachmentParams.readonly = readonly;
+            this.attachmentParams.reload = new Date().toLocaleString();
+            this.attachmentParams.openDialogAttach = true;
           },
             prevStep(){
                 this.$emit('prevStep');
@@ -322,6 +335,9 @@
             },
             closeOpenDialog(obj){
                 this.chooseGoodsParams.openDialogChoose = false;
+            },
+            closeAttachDialog(obj){
+                this.attachmentParams.openDialogAttach = false;
             },
             chooseGoods(obj){
                 this.tableData.filter(item => {
