@@ -7,28 +7,24 @@
             :before-close="()=>closeDialog(false)"
             width="750px"
     >
-      <el-row type="flex" align="middle">
-        <el-col :span="12" :offset="6">
-        <el-upload
-          class="upload-demo"
-          drag
-          action="https://jsonplaceholder.typicode.com/posts/"
-          multiple>
-          <i class="el-icon-upload"></i>
-          <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        </el-upload>
-        </el-col>
-      </el-row>
+
+          <common-upload
+                         :belong-id="11"
+                         :objType="1"
+                         :disabled="false"
+                         ref="common-upload"
+          ></common-upload>
+
     </el-dialog>
 </template>
 <script>
-
+    import commonUpload from '@/views/upload/common-upload'
     export default {
         name: 'goods-attachment',
+        components: {commonUpload},
         data() {
             return {
-
-            }
+            };
         },
         methods: {
             closeDialog() {

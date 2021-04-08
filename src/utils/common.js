@@ -294,13 +294,7 @@ function getAccessDomain() {
  * @returns {string}
  */
 function getFileAccessDomain() {
-    let accessDomain = "";
-    if (constant.getway_login == 'true') {
-        accessDomain = constant.getway_domain_file;
-        if (window.location.hostname.indexOf("10.197") != -1) {
-            accessDomain = constant.getway_domain_inner;
-        }
-    }
+    let accessDomain = window.location.protocol + '//' + window.location.host;
     return accessDomain;
 }
 
