@@ -20,7 +20,8 @@
           :with-credentials="true"
           :accept="getAccept(config)"
           :auto-upload="true"
-          :disabled="disabled">
+          :disabled="disabled"
+          list-type="picture">
           <div  style="height:36px;line-height: 36px;">
             <!--<span slot="tip" class="upload-config-name">
               <span v-if="config.required" class="upload-config-name-required">*</span>
@@ -45,19 +46,23 @@
       </el-col>
     </el-row>
     <!--编辑中||全部显示||设置为公开-->
-    <el-row v-for="(uploadFile, index) in uploadFileList" v-bind:key="uploadFile.fileId"  style="height: 26px;line-height: 26px;">
-      <el-col :span="8" class="col-filename" :title="uploadFile.fileName" @click.native="onPreview(uploadFile)">
-        <svg class="icon" aria-hidden="true">
-          <use :xlink:href="uploadFile | icon"></use>
-        </svg>{{`${showRowNum ? `${index + 1}、` : ''}${uploadFile.fileName}`}}
+    <el-row v-for="(uploadFile, index) in uploadFileList" v-bind:key="uploadFile.id"  style="height: 120px;line-height: 26px;">
+      <el-col :span="3" class="col-filename">
+        <img style="height: 100px;width: 100px"
+             class="el-upload-list__item-thumbnail"
+             :src="'http://127.0.0.1:9091/admin/file/getAttachment?attachId=' + uploadFile.id" alt=""
+        >
       </el-col>
-      <el-col :span="4" class="col-normal" :title="uploadFile.uploadTime">{{uploadFile.uploadTime}}</el-col>
-      <el-col :span="4" class="col-normal">{{calcFileSize(uploadFile)}}</el-col>
+      <el-col :span="5" class="col-filename" :title="uploadFile.attachName" @click.native="onPreview(uploadFile)" style="margin-top: 80px">
+        {{uploadFile.attachName}}
+      </el-col>
+      <el-col :span="4" class="col-normal" :title="uploadFile.createTime" style="margin-top: 80px">{{uploadFile.createTime}}</el-col>
+      <el-col :span="4" class="col-normal" style="margin-top: 80px">{{calcFileSize(uploadFile)}}</el-col>
       <el-col :span="4" class="col-operation">
-        <el-button class="handle-btn"  type="text" @click="onPreview(uploadFile)" style="font-size: 13px;margin-left: 4px;">下载</el-button>
+        <el-button class="handle-btn"  type="text" @click="onPreview(uploadFile)" style="font-size: 13px;margin-left: 4px;margin-top: 80px;">下载</el-button>
         <!--                <el-button v-if="!disabled" class="handle-btn" :disabled="index === 0" type="text" @click="moveUp(uploadFile)" style="font-size: 13px;margin-left: 4px;">上移</el-button>-->
         <!--                <el-button v-if="!disabled" class="handle-btn" :disabled="index === (uploadFileList.length - 1)" @click="moveDown(uploadFile)" type="text" style="font-size: 13px;margin-left: 4px;">下移</el-button>-->
-        <el-button v-if="!disabled" class="handle-btn"  type="text" @click="deleteFile(uploadFile)" style="font-size: 13px;margin-left: 4px;">删除</el-button>
+        <el-button v-if="!disabled" class="handle-btn"  type="text" @click="deleteFile(uploadFile)" style="font-size: 13px;margin-left: 4px;margin-top: 80px;">删除</el-button>
       </el-col>
     </el-row>
   </div>
@@ -88,6 +93,10 @@
                 type: String,
                 default: ''
             },
+          objType: {
+            type: String,
+            default: '1'
+          },
             disabled: {
                 type: Boolean,
                 default: false
@@ -215,16 +224,17 @@
                 if (typeof (file.id) !== 'undefined' && file.id != null) {
                     deleteAttachment({attachId:file.id}).then(res => {
                         if (res.code === 0) {
+                          let index;
                             this.uploadFileList.forEach(function (item, index) {
                                 if (item.id === file.id) {
-                                    _this.$delete(_this.uploadFileList, index)
+                                  index = index;
                                 }
                             })
+                          this.uploadFileList.splice(index,1)
                             this.validate()
                             return true
                         }
                     }).catch(() => {
-                        this.$message.error('请求错误!');
                         this.loading = false
                     })
                     this.$emit('initData')
@@ -350,7 +360,7 @@
                 return true
             },
             async uploadFile (params) {
-                _this.doUploadFile(file)
+                this.doUploadFile(params.file)
             },
             async unchunckUploadFile (file) {
                 try {
@@ -358,13 +368,13 @@
                     const url = this.commonJs.getFileAccessDomain() + '/admin/file/uploadAttachment'
                     let formData = new FormData()
                     formData.append('file', file)
-                    formData.append('belongId', this.belongId)
-                    formData.append('fileName', file.name)
+                    formData.append('objId', this.belongId)
+                    formData.append('objType', this.objType)
                     const fileSize = file.size
                     formData.append('fileSize', fileSize) // 文件大小
                     const res = await axios.post(url, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
                     const { code, msg, data } = res.data
-                    if (code === 200) {
+                    if (code === 0) {
                         this.uploadFileList.push(data)
                         this.validate()
                         // 自定义上传前事件
@@ -373,10 +383,7 @@
                         }
                         return true
                     } else {
-                        this.$notify.error({
-                            title: '错误',
-                            message: msg
-                        })
+                      this.$message.error("上传错误");
                         this.$emit('initData')
                         return false
                     }
@@ -410,11 +417,8 @@
                           } */
             },
             onError (err, file, fileList) {
-                this.$notify.error({
-                    title: '错误',
-                    message: err,
-                    duration: 8000
-                })
+              console.log(err)
+              this.$message.error("上传异常");
                 this.$emit('initData')
             },
             initUploadFileList () {
@@ -438,7 +442,7 @@
                 this.showRequiredMessage = false
             },
             async deleteFile (file) {
-                if (file.fileId != undefined && file.fileId != null) {
+                if (file.id != undefined && file.id != null) {
                     // 自定义前事件
                     if (this.beforeDeleteFile) {
                         const result = await this.beforeDeleteFile(this.config, file)
@@ -448,7 +452,7 @@
                         }
                     }
 
-                    return this.$confirm(`确定删除 ${file.fileName}？`, '警告', { type: 'warning' })
+                    return this.$confirm(`确定删除 ${file.attachName}？`, '警告', { type: 'warning' })
                         .then(async () => {
                             const deleteResult = this.onRemove(file, null)
                             if (deleteResult) {
@@ -489,7 +493,7 @@
                     const res = await axios.post(url, formData, { headers: { 'Content-Type': 'application/json;charset=UTF-8' } })
                     const { code, msg } = res.data
                     let _this = this
-                    if (code === 200) {
+                    if (code === 0) {
                         let firstIndex = -1
                         let secondIndex = -1
                         let exchanged = false
@@ -513,11 +517,7 @@
                         })
                         return true
                     } else {
-                        this.$notify.error({
-                            title: '错误',
-                            message: msg,
-                            duration: 8000
-                        })
+                      this.$message.error("移动异常");
                         this.$emit('initData')
                         return false
                     }
@@ -553,7 +553,7 @@
             this.initUploadFileList()
         },
         watch: {
-            config: function () {
+          'config.files': function () {
                 this.initUploadFileList()
             }
         }

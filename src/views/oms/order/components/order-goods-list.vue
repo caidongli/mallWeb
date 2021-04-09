@@ -97,7 +97,7 @@
               </el-button>
               <el-button
                 size="mini"
-                @click="orderShow(scope.$index, scope.row,true)">图片
+                @click="orderShow(scope.$index, scope.row)">图片
               </el-button>
               <el-button
                 v-if="!readonly"
@@ -145,6 +145,7 @@
       :openDialogAttach="this.attachmentParams.openDialogAttach"
       :reload="this.attachmentParams.reload"
       :id="this.attachmentParams.id"
+      :readonly="this.attachmentParams.readonly"
       @closeAttachDialog="closeAttachDialog"
     ></goodsAttachment>
   </div>
@@ -286,9 +287,9 @@
             this.params.reload = new Date().toLocaleString();
               this.params.openDialogInfo = true;
             },
-          orderShow(index,row,readonly){
+          orderShow(index,row){
             this.attachmentParams.id = row.id;
-            this.attachmentParams.readonly = readonly;
+            this.attachmentParams.readonly = this.readonly;
             this.attachmentParams.reload = new Date().toLocaleString();
             this.attachmentParams.openDialogAttach = true;
           },

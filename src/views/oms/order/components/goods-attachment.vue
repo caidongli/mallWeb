@@ -5,16 +5,14 @@
             :close-on-click-modal="false"
             :close-on-press-escape="false"
             :before-close="()=>closeDialog(false)"
-            width="750px"
+            width="1000px"
     >
-
           <common-upload
-                         :belong-id="11"
-                         :objType="1"
-                         :disabled="false"
+                         :belong-id="id"
+                         :objType="objType"
+                         :disabled="readonly"
                          ref="common-upload"
           ></common-upload>
-
     </el-dialog>
 </template>
 <script>
@@ -24,6 +22,7 @@
         components: {commonUpload},
         data() {
             return {
+              objType:'1',
             };
         },
         methods: {
@@ -50,6 +49,10 @@
                 type: String,
                 default: "",
             },
+          readonly:{
+            type: Boolean,
+            default: true
+          },
           id: {
                 type: String,
                 default: "",

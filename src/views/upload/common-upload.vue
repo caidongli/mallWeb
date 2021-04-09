@@ -10,6 +10,7 @@
         <upload
                 :config="config"
                 :belong-id="belongId"
+                :objType = "objType"
                 :disabled="disabled"
                 :show-file-filters="showFileFilters"
                 :before-upload="beforeUpload"
@@ -36,7 +37,7 @@ export default {
             maxSize:20,
             maxUploadCount:10,
             files:[],
-            fileFilters:'jpg,png',
+            fileFilters:'.jpg,.png',
         },
     }
   },
@@ -101,22 +102,20 @@ export default {
         return;
       }
       const url = this.commonJs.getFileAccessDomain() + '/admin/file/selectAttachmentByObjId'
-      let formData = new FormData()
-      formData.append('objId', this.belongId)
-      formData.append('objType', this.objType)
+      let postData = {
+        objId:this.belongId,
+        objType:this.objType,
+      }
       const headers = { 'Cache-Control': 'no-cache', 'If-Modified-Since': '0' }
       // post方法的 表单格式
-      const res = await axios.post(url, formData, { headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8', ...headers } })
+      const res = await axios.post(url, postData, { headers: { 'Content-Type': 'application/json;charset=UTF-8', ...headers } })
       // const res = await axios.post(url, formData, { headers: { 'Content-Type': 'application/json;charset=UTF-8' } })
       const { code, msg, data } = res.data
-      if (code === 200) {
+      if (code === 0) {
           //本次是通过belongId查询或者还没有通过belongId查询过
           this.config.files = data
       } else {
-        this.$notify.error({
-          title: '错误',
-          message: msg
-        })
+        this.$message.error(msg);
       }
     },
     validate: function () {
