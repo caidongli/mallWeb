@@ -46,32 +46,30 @@
       </el-col>
     </el-row>
     <!--编辑中||全部显示||设置为公开-->
-    <el-row v-for="(uploadFile, index) in uploadFileList" v-bind:key="uploadFile.id"  style="height: 120px;line-height: 26px;">
-      <el-col :span="3" class="col-filename">
-        <img style="height: 100px;width: 100px"
-             class="el-upload-list__item-thumbnail"
-             :src="'http://127.0.0.1:9091/admin/file/getAttachment?attachId=' + uploadFile.id" alt=""
-        >
-      </el-col>
-      <el-col :span="5" class="col-filename" :title="uploadFile.attachName" @click.native="onPreview(uploadFile)" style="margin-top: 80px">
+    <el-row v-for="(uploadFile, index) in uploadFileList" v-bind:key="uploadFile.id"  style="line-height: 26px;">
+      <el-col :span="5" class="col-filename" :title="uploadFile.attachName" @click.native="previewPicture(uploadFile)">
         {{uploadFile.attachName}}
       </el-col>
-      <el-col :span="4" class="col-normal" :title="uploadFile.createTime" style="margin-top: 80px">{{uploadFile.createTime}}</el-col>
-      <el-col :span="4" class="col-normal" style="margin-top: 80px">{{calcFileSize(uploadFile)}}</el-col>
+      <el-col :span="4" class="col-normal" :title="uploadFile.createTime">{{uploadFile.createTime}}</el-col>
+      <el-col :span="4" class="col-normal">{{calcFileSize(uploadFile)}}</el-col>
       <el-col :span="4" class="col-operation">
-        <el-button class="handle-btn"  type="text" @click="onPreview(uploadFile)" style="font-size: 13px;margin-left: 4px;margin-top: 80px;">下载</el-button>
+        <el-button class="handle-btn"  type="text" @click="onPreview(uploadFile)" style="font-size: 13px;margin-left: 4px;">下载</el-button>
         <!--                <el-button v-if="!disabled" class="handle-btn" :disabled="index === 0" type="text" @click="moveUp(uploadFile)" style="font-size: 13px;margin-left: 4px;">上移</el-button>-->
         <!--                <el-button v-if="!disabled" class="handle-btn" :disabled="index === (uploadFileList.length - 1)" @click="moveDown(uploadFile)" type="text" style="font-size: 13px;margin-left: 4px;">下移</el-button>-->
-        <el-button v-if="!disabled" class="handle-btn"  type="text" @click="deleteFile(uploadFile)" style="font-size: 13px;margin-left: 4px;margin-top: 80px;">删除</el-button>
+        <el-button v-if="!disabled" class="handle-btn"  type="text" @click="deleteFile(uploadFile)" style="font-size: 13px;margin-left: 4px;">删除</el-button>
       </el-col>
     </el-row>
+    <el-dialog :visible.sync="pt.dialogVisible"
+               :append-to-body="true">
+      <img width="100%" :src="pt.dialogImageUrl" alt="">
+    </el-dialog>
   </div>
 </template>
 
 <script>
     import axios from 'axios'
     import '../fonts/iconfont'
-    import { getAttachment,deleteAttachment } from '@/api/attachment'
+    import { deleteAttachment } from '@/api/attachment'
 
     export default {
         name: 'upload',
@@ -80,7 +78,12 @@
                 uploadFileList: [],
                 showRequiredMessage: false,
                 uploadStatus: false, // 是否有文件在上传中
-                uploadPercent: 0 // 文件上传百分比
+                uploadPercent: 0, // 文件上传百分比
+                fileUrl:'',
+                pt:{
+                    dialogVisible:false,
+                    dialogImageUrl:'',
+                },
             }
         },
         props: {
@@ -167,7 +170,10 @@
             }
         },
         methods: {
-
+            previewPicture(file){
+                this.pt.dialogImageUrl = this.commonJs.getFileAccessDomain()+'/admin/file/getAttachment?attachId='+file.id;
+                this.pt.dialogVisible = true;
+            },
             /* 为了显示上传的动态效果，将show-file-list设置为true,将file-list设置为空(getFileList返回空) */
             getFileList: function (uploadFileList) {
                 /* let result = [];
@@ -425,6 +431,7 @@
                 const files = this.config.files
                 if (files != null && files != undefined) {
                     this.uploadFileList = files
+                    this.fileUrl = this.commonJs.getFileAccessDomain()+'/admin/file/getAttachment?attachId='
                 } else {
                     this.uploadFileList = []
                 }
