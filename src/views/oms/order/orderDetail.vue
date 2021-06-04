@@ -64,9 +64,19 @@
       </el-row>
       <el-row type="flex" class="row-bg">
         <el-col :span="6" :offset="2">
-          <el-form-item label="设计师：" prop="designer">
-            <el-input
-              v-model.trim="dataForm.designer" :disabled="routeParams.readonly"></el-input>
+          <el-form-item label="设计师：" prop="designerNo">
+            <el-select v-model="dataForm.designerNo" clearable
+                       placeholder="设计师"
+                       :disabled="routeParams.readonly">
+              <el-option
+                v-for="item in employeesOptions"
+                :key="item.staffNo"
+                :label="item.staffName"
+                :value="item.staffNo">
+              </el-option>
+            </el-select>
+<!--            <el-input-->
+<!--              v-model.trim="dataForm.designer" :disabled="routeParams.readonly"></el-input>-->
           </el-form-item>
         </el-col>
         <el-col :span="6" :offset="3">
@@ -78,9 +88,17 @@
       </el-row>
       <el-row type="flex" class="row-bg" >
         <el-col :span="6" :offset="2">
-          <el-form-item label="销售人员：" prop="salesman">
-            <el-input
-              v-model.trim="dataForm.salesman" :disabled="routeParams.readonly"></el-input>
+          <el-form-item label="销售人员：" prop="salesmanNo">
+            <el-select v-model="dataForm.salesmanNo" clearable
+                       placeholder="销售人员"
+                       :disabled="routeParams.readonly">
+              <el-option
+                v-for="item in employeesOptions"
+                :key="item.staffNo"
+                :label="item.staffName"
+                :value="item.staffNo">
+              </el-option>
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="6" :offset="3">
@@ -252,6 +270,7 @@
       :readonly = routeParams.readonly
       :reload="this.params.reload"
       :orderId="this.params.orderId"
+      :amount="this.params.totalAmount"
     ></orderGoodsList>
     <orderAmountList
       :openDialogAmount="this.params.openDialogAmount"
@@ -277,7 +296,8 @@
 </template>
 
 <script>
-  import { saveOrUpdateOrder,getOrderInfo,getAddress,printOrder } from '@/api/order'
+  import { saveOrUpdateOrder,getOrderInfo,getAddress,getAllAddress,printOrder } from '@/api/order'
+  import { queryEmployeesList } from '@/api/employees'
   import orderGoodsList from './components/order-goods-list'
   import orderAmountList from './components/order-amount-list'
   import { getOrderAddress } from '@/api/orderAddress'
@@ -301,12 +321,18 @@
           isAdd:false,
           id:'',
           addressId:'',
+            provinceCode:'',
+            cityCode:'',
+            areaCode:'',
         },
         tableData:[],
         searchFormData:{
           orderId:'',
           goodsName:'',
         },
+          employeesOptions:{
+
+          },
         payWayOptions: [
           {
             value: 'sdns',
@@ -336,6 +362,7 @@
           orderId:'',
           reload:'',
           openDialogAmount:false,
+            totalAmount:'',
           type:'',
         },
         dataForm: {
@@ -364,7 +391,9 @@
           preDeliveryData:'',
           remark:'',
           designer:'',
+            designerNo:'',
           salesman:'',
+            salesmanNo:'',
           payWay:'',
           preReceivableRatio:'',
           discount:'',
@@ -387,8 +416,8 @@
               trigger: 'blur'
             }],
           preDeliveryData: [{required: true, message: '预交货时间不能为空'}],
-          designer: [{required: true, message: '设计师不能为空'}],
-          salesman: [{required: true, message: '销售员能为空'}],
+          designerNo: [{required: true, message: '设计师不能为空'}],
+          salesmanNo: [{required: true, message: '销售员能为空'}],
           payWay: [{required: true, message: '支付方式不能为空'}],
           // preReceivableRatio: [{required: true, message: '预收款比例不能为空'}],
           totalAmount: [{required: true, message: '合计原价不能为空'}],
@@ -411,10 +440,12 @@
     },
     methods: {
       loadData() {
+          this.loadEmployees();
         if(this.routeParams.id && this.routeParams.id != null && this.routeParams.id != ''){
           getOrderInfo({id:this.routeParams.id}).then(res => {
             if (res.code === 0) {
               this.dataForm = res.data
+                this.params.totalAmount = res.data.totalAmount+'';
               if(res.data.houseNumber != null){
                 let str = res.data.houseNumber.split("栋")
                 this.dataForm.building = str[0];
@@ -423,7 +454,6 @@
                 this.dataForm.cityInfo = res.data.cityCode+':'+res.data.city;
                 this.dataForm.areaInfo = res.data.areaCode+':'+res.data.area;
                 this.dataForm.preReceivableRatio = this.dataForm.preReceivableRatio * 100
-                this.loadAddress(res.data);
               }
               this.params.reload = new Date().toLocaleString();
               this.params.orderId = res.data.id;
@@ -450,40 +480,34 @@
                 this.$message.error(res.msg);
               }
             })
-          }else {
-            this.loadAddress(this.dataForm);
           }
         }
       },
+        loadEmployees(){
+            queryEmployeesList({}).then(res => {
+                if (res.code === 0) {
+                    this.employeesOptions = res.data;
+                }
+            });
+        },
       loadAddress(data){
-        getAddress({type:'province'}).then(res => {
-          if (res.code === 0) {
-            this.provinceOptions = res.data;
-          }else {
-            this.$message.error(res.msg);
-          }
-        });
-        if(data.provinceCode != null && data.provinceCode != ''){
-          getAddress({type:'city',code:data.provinceCode}).then(res => {
-            if (res.code === 0) {
-              this.cityOptions = res.data;
-            }
+          let params = {
+              proCode:data.provinceCode,
+              cityCode:data.cityCode,
+              areaCode:data.areaCode,
+          };
+          getAllAddress(params).then(res => {
+              if (res.code === 0) {
+                  console.log(res.data)
+                  this.provinceOptions = res.data.province;
+                  this.cityOptions = res.data.city;
+                  this.areaOptions = res.data.area;
+                  this.townOptions = res.data.town;
+              }else {
+                  this.$message.error(res.msg);
+              }
           });
-        }
-        if(data.cityCode != null && data.cityCode != ''){
-          getAddress({type:'area',code:data.cityCode}).then(res => {
-            if (res.code === 0) {
-              this.areaOptions = res.data;
-            }
-          });
-        }
-        if(data.areaCode != null && data.areaCode != ''){
-          getAddress({type:'town',code:data.areaCode}).then(res => {
-            if (res.code === 0) {
-              this.townOptions = res.data;
-            }
-          });
-        }
+
       },
       clateReceivableAmount(){
         if(this.dataForm.receivableAmount && this.dataForm.receivableAmount != ''){
@@ -531,6 +555,12 @@
             }
             this.dataForm.preReceivableRatio = (this.dataForm.preReceivableRatio / 100).toFixed(4);
             this.dataForm.houseNumber =  this.dataForm.building+"栋"+this.dataForm.houseNumber
+              this.dataForm.designer = this.employeesOptions.find((item) => {
+                  return item.staffNo ==  this.dataForm.designerNo;
+              }).staffName;
+              this.dataForm.salesman = this.employeesOptions.find((item) => {
+                  return item.staffNo ==  this.dataForm.salesmanNo;
+              }).staffName;
             saveOrUpdateOrder(this.dataForm).then(res => {
               if (res.code === 0) {
                 this.dataForm = res.data
@@ -642,6 +672,7 @@
           this.routeParams = JSON.parse(this.commonJs.getStore(current_page_params));
         }
         this.loadData();
+        this.loadAddress(this.routeParams);
       },
     },
     watch: {
@@ -649,6 +680,7 @@
         if (newVal) {
           this.tableData = [];
           this.loadData();
+          this.loadAddress(this.routeParams);
         }
       },
     },

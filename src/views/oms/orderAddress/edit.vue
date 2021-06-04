@@ -93,7 +93,7 @@
 
 <script>
     import { getOrderAddress,saveOrUpdateAddress } from '@/api/orderAddress'
-    import { getAddress } from '@/api/order'
+    import { getAddress,getAllAddress } from '@/api/order'
     import {isPhone, isMobile} from '@/utils/validate'
     import {current_page_params} from '@/utils/constant'
     export default {
@@ -102,6 +102,9 @@
             return {
                 formName: 'dataForm',
                 routeParams:{
+                    provinceCode:'',
+                    cityCode:'',
+                    areaCode:'',
                     readonly:true,
                     id:'',
                 },
@@ -147,47 +150,29 @@
                             this.dataForm.provinceInfo = res.data.provinceCode+':'+res.data.province
                           this.dataForm.cityInfo = res.data.cityCode+':'+res.data.city
                           this.dataForm.areaInfo = res.data.areaCode+':'+res.data.area
-                          this.loadAddress(res.data);
                         }else {
                             this.$message.error(res.msg);
                         }
                     })
-                }else{
-                  this.loadAddress(this.dataForm);
                 }
             },
             loadAddress(data){
-                getAddress({type:'province'}).then(res => {
+                let params = {
+                    proCode:data.provinceCode,
+                    cityCode:data.cityCode,
+                    areaCode:data.areaCode,
+                };
+                getAllAddress(params).then(res => {
                     if (res.code === 0) {
-                        this.provinceOptions = res.data;
+                        console.log(res.data)
+                        this.provinceOptions = res.data.province;
+                        this.cityOptions = res.data.city;
+                        this.areaOptions = res.data.area;
+                        this.townOptions = res.data.town;
                     }else {
                         this.$message.error(res.msg);
                     }
-                }).catch(() => {
-                    this.$message.error('请求错误!');
-                    this.loading = false
                 });
-                if(data.provinceCode != null && data.provinceCode != ''){
-                  getAddress({type:'city',code:data.provinceCode}).then(res => {
-                    if (res.code === 0) {
-                      this.cityOptions = res.data;
-                    }
-                  });
-                }
-              if(data.cityCode != null && data.cityCode != ''){
-                getAddress({type:'area',code:data.cityCode}).then(res => {
-                  if (res.code === 0) {
-                    this.areaOptions = res.data;
-                  }
-                });
-              }
-              if(data.areaCode != null && data.areaCode != ''){
-                getAddress({type:'town',code:data.areaCode}).then(res => {
-                  if (res.code === 0) {
-                    this.townOptions = res.data;
-                  }
-                });
-              }
             },
             saveOrUpdate(){
                 this.$refs[this.formName].validate(async valid => {
@@ -208,7 +193,7 @@
                       this.dataForm.city = this.dataForm.cityInfo.split(":")[1]
                         saveOrUpdateAddress(this.dataForm).then(res => {
                             if (res.code === 0) {
-                                this.loadData();
+                                this.$router.push({name:'orderAddress'})
                                 this.$message.success(res.msg);
                             } else {
                                 this.$message.error(res.msg);
@@ -286,6 +271,7 @@
             async mounted() {
                 this.routeParams = JSON.parse(this.commonJs.getStore(current_page_params));
                 this.loadData();
+                this.loadAddress(this.routeParams);
             },
         },
         watch: {

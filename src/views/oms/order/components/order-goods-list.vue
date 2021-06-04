@@ -30,12 +30,15 @@
       <el-table :data="tableData" border stripe >
         <el-table-column prop="goodsType" label="商品类别" >
           <template slot-scope="scope">
-            <el-select v-model="scope.row.goodsType" placeholder="商品类别" :disabled="readonly">
+            <el-select v-model="scope.row.goodsType"
+                       placeholder="商品类别"
+                       :disabled="readonly"
+                       @change="v => selectGoodType(v,scope.row)">
               <el-option
                 v-for="item in options"
-                :key="item.value"
+                :key="item.label"
                 :label="item.label"
-                :value="item.value">
+                :value="item.label">
               </el-option>
             </el-select>
           </template>
@@ -173,11 +176,20 @@
               },
               totalAmount:0,
                 options: [{
-                    value: 'cp',
+                    value: 'CP',
                     label: '成品'
                 }, {
-                    value: 'dz',
+                    value: 'DZ',
                     label: '定制'
+                },{
+                    value: 'HQB',
+                    label: '护墙板'
+                },{
+                    value: 'RZ',
+                    label: '软装'
+                },{
+                    value: 'PT',
+                    label: '配套'
                 }],
                 dataForm: {
                     id:'',
@@ -192,6 +204,7 @@
                     price: '',
                     totalAmount: '',
                     goodsType: '',
+                    goodsTypeValue:'',
                   unit:'',
                 },
                 chooseGoodsParams:{
@@ -254,15 +267,6 @@
               }
             })
           },
-          formatterType:function(row, column) {
-            if (row.goodsType === 'cp') {
-              return "成品";
-            }else if (row.goodsType === 'dz') {
-              return "定制";
-            }else {
-              return "";
-            }
-          },
           add(readonly){
             let obj = JSON.parse(JSON.stringify(this.dataForm));
             obj.orderId = this.orderId;
@@ -280,6 +284,9 @@
                         this.$message.error(res.msg);
                     }
                 })
+            },
+            selectGoodType(value,row){
+                row.goodsTypeValue = this.options.find(val => val.label == value).value
             },
           orderUpdate(index,row,readonly){
             this.params.id = row.id;

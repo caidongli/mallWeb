@@ -34,6 +34,9 @@
               printOrder({id:this.routeParams.id}).then(res => {
                               if (res.code === 0) {
                                 this.htmlData = res.data
+                                  setTimeout(function(){
+                                      window.print();
+                                  },500)
                               }else {
                                 this.$message.error(res.msg);
                               }

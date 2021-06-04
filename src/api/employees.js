@@ -6,4 +6,6 @@ export const getEmployees = data => ajax('/admin/employees/getEmployees', data, 
 
 export const queryEmployeesList = data => ajax('/admin/employees/queryEmployeesList', data, 'POST',JSON);
 
+export const queryEmployeesPage = data => ajax('/admin/employees/queryEmployeesPage', data, 'POST',JSON);
+
 export const delEmployees = data => ajax('/admin/employees/delEmployees', data, 'POST',JSON);

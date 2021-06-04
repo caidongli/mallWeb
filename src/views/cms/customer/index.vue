@@ -192,14 +192,19 @@
             this.params.openDialogInfo = true
             },
             del(row){
-              delCustomer({id:row.id}).then(res => {
-                    if (res.code === 0) {
-                        this.loadData();
-                    }
-                }).catch(() => {
-                    this.$message.error('请求错误!');
-                    this.loading = false
-                })
+                this.$confirm('确认删除？', '警告', {type: "warning"})
+                    .then(async () => {
+                        delCustomer({id:row.id}).then(res => {
+                            if (res.code === 0) {
+                                this.loadData();
+                            }
+                        }).catch(() => {
+                            this.$message.error('请求错误!');
+                            this.loading = false
+                        })
+                    })
+                    .catch(() => {
+                    })
             },
             handleResetSearch(){
                 this.searchFormData.developers = '';

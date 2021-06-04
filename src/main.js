@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import commonJs from './utils/common'
 import constants from './utils/constant'
+import './utils/filter'
 
 import 'normalize.css/normalize.css'// A modern alternative to CSS resets
 

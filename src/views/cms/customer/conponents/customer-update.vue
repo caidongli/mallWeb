@@ -42,7 +42,11 @@
         <el-row type="flex" class="row-bg">
           <el-col :span="20">
             <el-form-item label="开发商：" prop="developers">
-              <el-select v-model="dataForm.developers" placeholder="开发商">
+              <el-select v-model="dataForm.developers"
+                         filterable
+                         allow-create
+                         default-first-option
+                         placeholder="开发商">
                 <el-option
                   v-for="item in options"
                   :key="item.companyName"

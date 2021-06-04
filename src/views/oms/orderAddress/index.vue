@@ -133,10 +133,10 @@
                 this.$router.push({name:'orderAddressEdit',params:{readonly: readonly,isAdd:isAdd}});
             },
             show(index,row,readonly){
-                this.$router.push({name:'orderAddressEdit',params:{id:row.id,readonly: readonly,isAdd: false}});
+                this.$router.push({name:'orderAddressEdit',params:{id:row.id,provinceCode:row.provinceCode,cityCode:row.cityCode,areaCode:row.areaCode,readonly: readonly,isAdd: false}});
             },
             update(index,row,readonly){
-                this.$router.push({name:'orderAddressEdit',params:{id:row.id,readonly: readonly,isAdd: false}});
+                this.$router.push({name:'orderAddressEdit',params:{id:row.id,provinceCode:row.provinceCode,cityCode:row.cityCode,areaCode:row.areaCode,readonly: readonly,isAdd: false}});
             },
             deleteInfo(index,row){
                 this.$confirm('确认删除？', '警告', {type: "warning"})

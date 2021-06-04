@@ -285,14 +285,14 @@
                     });
             },
             orderShow(index,row,readonly){
-                this.$router.push({name:'orderDetail',params:{id:row.id,readonly: readonly,isAdd: false}});
+                this.$router.push({name:'orderDetail',params:{id:row.id,provinceCode:row.provinceCode,cityCode:row.cityCode,areaCode:row.areaCode,readonly: readonly,isAdd: false}});
             },
             orderUpdate(index,row,readonly){
-                this.$router.push({name:'orderUpdate',params:{id:row.id,readonly: readonly,isAdd: false}});
+                this.$router.push({name:'orderUpdate',params:{id:row.id,provinceCode:row.provinceCode,cityCode:row.cityCode,areaCode:row.areaCode,readonly: readonly,isAdd: false}});
             },
             updateOrderStatus(index,row){
                 this.$confirm('确认作废？', '警告', {type: "warning"})
-                    .then(async () => {
+                            .then(async () => {
                         updateOrderStatus({id:row.id,status:"0"}).then(res => {
                             if (res.code === 0) {
                                 this.loadData();

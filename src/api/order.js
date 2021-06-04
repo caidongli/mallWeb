@@ -36,3 +36,4 @@ export const printOrder = data => ajax('/admin/order/printOrder', data, 'POST',J
 
 export const getAddress = data => ajax('/admin/nAddress/getAddress', data, 'POST',JSON);
 
+export const getAllAddress = data => ajax('/admin/nAddress/getAllAddress', data, 'POST',JSON);

@@ -25,25 +25,25 @@
             </el-form-item>
           </el-col>
           <el-col :span="9" :offset="2">
-            <el-form-item label="手机号码：" prop="phone">
+            <el-form-item label="员工编号：" prop="staffNo">
               <el-input
-                v-model="dataForm.phone">
+                v-model="dataForm.staffNo">
               </el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row type="flex" class="row-bg">
           <el-col :span="9">
-            <el-form-item label="身份证：">
+            <el-form-item label="手机号码：" prop="phone">
               <el-input
-                v-model="dataForm.idCard">
+                v-model="dataForm.phone">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="9" :offset="2">
-            <el-form-item label="住址：">
+            <el-form-item label="身份证：">
               <el-input
-                v-model="dataForm.address">
+                v-model="dataForm.idCard">
               </el-input>
             </el-form-item>
           </el-col>
@@ -58,24 +58,49 @@
           </el-col>
           <el-col :span="9" :offset="2">
             <el-form-item label="性别：">
-              <el-input
-                v-model="dataForm.sex">
-              </el-input>
+              <el-radio-group v-model="dataForm.sex">
+                <el-radio :label='"1"'>男</el-radio>
+                <el-radio :label='"0"'>女</el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row type="flex">
           <el-col :span="9">
-            <el-form-item label="岗位薪资：" prop="postSalary">
+            <el-form-item label="入职时间:" prop="entryTime">
+              <el-date-picker type="date"
+                              @input="datetimeChange"
+                              v-model="dataForm.entryTime"
+                              :value-format="valueFormat"></el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="9" :offset="2">
+            <el-form-item label="岗位：">
+              <el-select v-model="dataForm.post" clearable >
+                <el-option
+                  v-for="item in postOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row type="flex">
+          <el-col :span="9">
+            <el-form-item label="薪资总额：" prop="postSalary">
               <el-input
                 v-model="dataForm.postSalary">
+                <el-button slot="append" icon="el-icon-search" @click="openInfo('salary')" ></el-button>
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="9" :offset="2">
-            <el-form-item label="岗位成本：" prop="postCost">
+            <el-form-item label="成本总额：" prop="postCost">
               <el-input
                 v-model="dataForm.postCost">
+                <el-button slot="append" icon="el-icon-search" @click="openInfo('cost')"></el-button>
               </el-input>
             </el-form-item>
           </el-col>
@@ -85,6 +110,7 @@
             <el-form-item label="岗位总提成：" prop="postAllDeduction">
               <el-input
                 v-model="dataForm.postAllDeduction">
+                <template slot="append">%</template>
               </el-input>
             </el-form-item>
           </el-col>
@@ -92,17 +118,13 @@
             <el-form-item label="岗位个人提成：" prop="postDeduction">
               <el-input
                 v-model="dataForm.postDeduction">
+                <template slot="append">%</template>
               </el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row type="flex">
           <el-col :span="9">
-              <el-form-item label="入职时间:" prop="entryTime">
-                <el-date-picker type="date" v-model="dataForm.entryTime" :value-format="valueFormat"></el-date-picker>
-              </el-form-item>
-          </el-col>
-          <el-col :span="9" :offset="2">
             <el-form-item label="员工状态：">
               <el-radio-group v-model="status">
                 <el-radio :label='"1"'>在职</el-radio>
@@ -125,6 +147,20 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <el-row type="flex" class="row-bg" >
+          <el-col :span="20">
+            <el-form-item label="住址：">
+              <el-input type="textarea" v-model="dataForm.address" ></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row type="flex" class="row-bg" >
+          <el-col :span="20">
+            <el-form-item label="备注：">
+              <el-input type="textarea" v-model="dataForm.remark"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <!--底部操作按钮-->
       <el-row justify="right">
@@ -139,41 +175,105 @@
       </el-row>
     </div>
   </el-dialog>
+    <employeesInfo
+      :openDialogChoose="this.infoParams.openDialogChoose"
+      :reload="this.infoParams.reload"
+      :type="this.infoParams.type"
+      :propData="this.infoParams.propData"
+      :readonly="this.infoParams.readonly"
+      @closeOpenDialog="closeOpenDialog"
+      @confirm="confirm"
+    ></employeesInfo>
   </div>
 </template>
 
 <script>
   import { saveOrUpdateEmployees,getEmployees } from '@/api/employees'
+  import {isPhone, isMobile,isIdCard} from '@/utils/validate'
+  import employeesInfo from './employees-info'
   export default {
     name: 'employeesUpdate',
+      components: {employeesInfo},
     data() {
+        var validatePhoneNumber = async (rule, value, callback) => {
+            if (!isMobile(value) && !isPhone(value)) {
+                callback(new Error('请输入正确的手机号或者电话号'));
+                return
+            }
+        };
+        var idCard = async (rule, value, callback) => {
+            if (!isIdCard(value)) {
+                callback(new Error('请输入正确的身份证号码'));
+                return
+            }
+        };
       return {
         formName: 'dataForm',
-          status:'',
+          status:'1',
         dataForm: {
           id:'',
             staffName:'',
+            staffNo:'',
             idCard:'',
             phone:'',
             age:'',
             sex:'',
             address:'',
             entryTime:'',
+            post:'',
             postDeduction:'',
             postAllDeduction:'',
             postCost:'',
+            costInfos:[],
             status:'',
             leavingTime:'',
             leavingReason:'',
             postSalary:'',
+            salaryInfos:[],
           remark:'',
         },
+          infoParams:{
+              openDialogChoose:false,
+              reload:'',
+              type:'',
+              propData:[],
+              readonly:true,
+          },
+          postOptions: [
+              {
+                  value: 'SJS',
+                  label: '设计师'
+              },{
+                  value: 'SJZG',
+                  label: '定制主管'
+              },{
+                  value: 'FZR',
+                  label: '项目负责人'
+              },{
+                  value: 'JL',
+                  label: '项目监理'
+              },{
+                  value: 'XS',
+                  label: '销售'
+              }
+          ],
         rules: {
             staffName: [{required: true, message: '员工姓名不能为空'}],
-            phone: [{required: true, message: '手机号码不能为空'}],
+            staffNo: [{required: true, message: '员工编号不能为空'}],
+            phone: [{required: true, message: '手机号码不能为空'},
+                {
+                    validator: validatePhoneNumber,
+                    trigger: 'blur'
+                }],
+            idCard: [
+                {
+                    validator: idCard,
+                    trigger: 'blur'
+                }],
             postSalary: [{required: true, message: '岗位薪资不能为空'}],
             postCost: [{required: true, message: '岗位成本不能为空'}],
             postAllDeduction: [{required: true, message: '岗位总提不能为空'}],
+            post: [{required: true, message: '岗位不能为空'}],
             postDeduction: [{required: true, message: '个人提成不能为空'}],
             entryTime: [{required: true, message: '入职时间不能为空'}],
             status: [{required: true, message: '员工状态不能为空'}],
@@ -182,22 +282,50 @@
     },
     methods: {
       loadData() {
-          if(this.id && this.id != null && this.id != ''){
-              getEmployees({id:this.id}).then(res => {
-                  if (res.code === 0) {
-                      this.dataForm = res.data
-                      this.status = this.dataForm.status;
-                  }else {
-                      this.$message.error(res.msg);
-                  }
-              })
-          }else{
-              this.status = '1';
-          }
+          getEmployees({id:this.id}).then(res => {
+              if (res.code === 0) {
+                  this.dataForm = res.data
+                  this.status = this.dataForm.status;
+              }else {
+                  this.$message.error(res.msg);
+              }
+          })
       },
       closeDialogInfo() {
         this.$emit('closeDialogInfo',null);
       },
+        openInfo(type){
+            if(type == 'salary'){
+                this.infoParams.propData=this.dataForm.salaryInfos;
+            }else if(type == 'cost'){
+                this.infoParams.propData=this.dataForm.costInfos;
+            }
+            this.infoParams.reload = new Date().toLocaleString();
+            this.infoParams.type = type;
+            this.infoParams.readonly = this.readonly;
+            this.infoParams.openDialogChoose = true;
+        },
+        closeOpenDialog(){
+            this.infoParams.openDialogChoose = false;
+        },
+        confirm(obj){
+          if(obj.type =='salary'){
+              let count = 0;
+              this.dataForm.salaryInfos = obj.data;
+              obj.data.forEach((item) => {
+                  count = count + (item.value - 0)
+              })
+              this.dataForm.postSalary = count;
+          }else if(obj.type == 'cost'){
+              let count = 0;
+              this.dataForm.costInfos = obj.data;
+              obj.data.forEach((item) => {
+                  count = count + (item.value - 0)
+              })
+              this.dataForm.postCost = count;
+          }
+          console.log(this.dataForm)
+        },
       resetForm() {
         this.$nextTick(()=>{
           this.$refs[this.formName].resetFields();
@@ -223,6 +351,10 @@
           }
         })
       },
+        datetimeChange(time){
+            //强制刷新
+            this.$forceUpdate();
+        },
     },
     watch: {
       reload: function (newVal, oldVal) {
@@ -244,8 +376,8 @@
         default: "",
       },
       id: {
-        type: Number,
-        default: null,
+        type: String,
+        default: "",
       },
       readonly:{
         type: Boolean,
