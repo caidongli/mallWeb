@@ -115,10 +115,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="9" :offset="2">
-            <el-form-item label="岗位个人提成：" prop="postDeduction">
+            <el-form-item label="岗位个人提成：">
               <el-input
-                v-model="dataForm.postDeduction">
-                <template slot="append">%</template>
+                v-model="postDeductions"  :disabled="true">
+                <el-button slot="append" icon="el-icon-search" @click="openInfo('deduction')"></el-button>
               </el-input>
             </el-form-item>
           </el-col>
@@ -210,6 +210,7 @@
       return {
         formName: 'dataForm',
           status:'1',
+        postDeductions:'查看详情',
         dataForm: {
           id:'',
             staffName:'',
@@ -221,7 +222,7 @@
             address:'',
             entryTime:'',
             post:'',
-            postDeduction:'',
+            deductions:[],
             postAllDeduction:'',
             postCost:'',
             costInfos:[],
@@ -274,7 +275,6 @@
             postCost: [{required: true, message: '岗位成本不能为空'}],
             postAllDeduction: [{required: true, message: '岗位总提不能为空'}],
             post: [{required: true, message: '岗位不能为空'}],
-            postDeduction: [{required: true, message: '个人提成不能为空'}],
             entryTime: [{required: true, message: '入职时间不能为空'}],
             status: [{required: true, message: '员工状态不能为空'}],
         }
@@ -299,6 +299,8 @@
                 this.infoParams.propData=this.dataForm.salaryInfos;
             }else if(type == 'cost'){
                 this.infoParams.propData=this.dataForm.costInfos;
+            }else if (type == 'deduction'){
+              this.infoParams.propData=this.dataForm.deductions;
             }
             this.infoParams.reload = new Date().toLocaleString();
             this.infoParams.type = type;
@@ -324,7 +326,9 @@
               })
               this.dataForm.postCost = count;
           }
-          console.log(this.dataForm)
+          else if(obj.type == 'deduction'){
+            this.dataForm.deductions = obj.data;
+          }
         },
       resetForm() {
         this.$nextTick(()=>{

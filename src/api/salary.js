@@ -10,10 +10,4 @@ export const delSalary = data => ajax('/admin/salary/delSalary', data, 'POST',JS
 
 export const createSalary = data => ajax('/admin/salary/createSalary', data, 'POST',JSON);
 
-export const ym = data => ajax('/admin/test/getym', data, 'POST',JSON);
-
-export const addOrder = data => ajax('/admin/ym/addOrder', data, 'POST',JSON);
-
-export const addOrderTaget = data => ajax('/admin/ym/addOrderTaget', data, 'POST',JSON);
-
 export const sdym = data => ajax('/admin/test/getsdym', data, 'POST',JSON);

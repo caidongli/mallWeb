@@ -50,30 +50,6 @@
         size="mini">
         生成
       </el-button>
-      <el-button
-        class="btn-add"
-        @click="ymqh()"
-        size="mini">
-        疫苗
-      </el-button>
-      <el-button
-        class="btn-add"
-        @click="addOrderTaget()"
-        size="mini">
-        疫苗2
-      </el-button>
-      <el-button
-        class="btn-add"
-        @click="ksym()"
-        size="mini">
-        打开
-      </el-button>
-      <el-button
-        class="btn-add"
-        @click="zzym()"
-        size="mini">
-        关闭
-      </el-button>
     </el-card>
     <div class="table-container">
       <el-table :data="tableData" border stripe>
@@ -120,7 +96,7 @@
 </template>
 <script>
     import salaryUpdate from './conponents/salary-update'
-    import { querySalaryList,createSalary,ym,sdym,addOrder,addOrderTaget } from '@/api/salary'
+    import { querySalaryList,createSalary,sdym } from '@/api/salary'
     export default {
         name: "salaryList",
         components: {salaryUpdate},
@@ -206,23 +182,13 @@
                 if(this.ymStatus){
                     const that = this;
                     setTimeout(function () {
-                        addOrder().then(res => {
-                            console.log(res.msg)
+                      sdym({flag:false}).then(res => {
                             if (res.code === 0) {
-                            }else {
-                                that.ymqh();
-                            }
-                        })
-                    }, 2000);
-                }
-            },
-            addOrderTaget(){
-                if(this.ymStatus){
-                    const that = this;
-                    setTimeout(function () {
-                        addOrderTaget().then(res => {
-                            console.log(res.msg)
-                            if (res.code === 0) {
+                              this.$confirm('预约成功', '成功', {type: "success"})
+                                .then(async () => {
+                                })
+                                .catch(() => {
+                                })
                             }else {
                                 that.ymqh();
                             }

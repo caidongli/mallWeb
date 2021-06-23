@@ -22,7 +22,7 @@ axios.interceptors.response.use(
      */
     const res = response.data
 
-    if (res.code != 0 && res.code != -1) {
+    if (res.code != 0 && res.code != -1 && res.code != -2) {
       Message({
         message: res.msg,
         type: 'error',
@@ -36,7 +36,7 @@ axios.interceptors.response.use(
       }
       return Promise.reject('error')
     } else {
-      if(res.code == -1){
+      if(res.code == -1 || res.code == -2){
         Message({
           message: res.msg,
           type: 'error',

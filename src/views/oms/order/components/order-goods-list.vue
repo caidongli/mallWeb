@@ -36,9 +36,9 @@
                        @change="v => selectGoodType(v,scope.row)">
               <el-option
                 v-for="item in options"
-                :key="item.label"
-                :label="item.label"
-                :value="item.label">
+                :key="item.columnValue"
+                :label="item.columnValue"
+                :value="item.columnKey">
               </el-option>
             </el-select>
           </template>
@@ -155,6 +155,7 @@
 </template>
 <script>
   import { queryOrderGoodsList,delGoods,saveOrUpdateGoods,saveOrUBatchGoods } from '@/api/order'
+  import { queryDictList } from '@/api/dict'
   import { queryGoodsList } from '@/api/goods'
   import goodsUpdate from './order-goods-update'
   import chooseGoods from './choose-goods'
@@ -175,22 +176,7 @@
                 goodCode: '',
               },
               totalAmount:0,
-                options: [{
-                    value: 'CP',
-                    label: '成品'
-                }, {
-                    value: 'DZ',
-                    label: '定制'
-                },{
-                    value: 'HQB',
-                    label: '护墙板'
-                },{
-                    value: 'RZ',
-                    label: '软装'
-                },{
-                    value: 'PT',
-                    label: '配套'
-                }],
+                options: [],
                 dataForm: {
                     id:'',
                     orderId: '',
@@ -267,6 +253,13 @@
               }
             })
           },
+          loadDict(){
+            queryDictList({columnType:'goods'}).then(res => {
+              if (res.code === 0) {
+                this.options = res.data;
+              }
+            })
+          },
           add(readonly){
             let obj = JSON.parse(JSON.stringify(this.dataForm));
             obj.orderId = this.orderId;
@@ -286,7 +279,7 @@
                 })
             },
             selectGoodType(value,row){
-                row.goodsTypeValue = this.options.find(val => val.label == value).value
+                row.goodsTypeValue = this.options.find(val => val.columnKey == value).columnValue
             },
           orderUpdate(index,row,readonly){
             this.params.id = row.id;
@@ -370,6 +363,7 @@
                     this.tableData = [];
                     this.loadData(true);
                     this.loadGoodsCodeData();
+                    this.loadDict();
                 }
             },
           tableData:{
