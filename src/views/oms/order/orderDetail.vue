@@ -24,7 +24,7 @@
         style="margin-right: 15px"
         @click="openAmount('1')"
         size="mini">
-        成交金额
+        实收金额
       </el-button>
     </el-card>
     <el-form
@@ -42,7 +42,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="6" :offset="3">
-          <el-form-item label="合计原价：" prop="totalAmount">
+          <el-form-item label="成交金额：" prop="totalAmount">
             <el-input
               v-model.trim="dataForm.totalAmount" @input="clateReceivableAmount()" :disabled="routeParams.readonly"></el-input>
           </el-form-item>
@@ -56,9 +56,9 @@
           </el-form-item>
         </el-col>
         <el-col :span="6" :offset="3">
-          <el-form-item label="成交金额：" prop="receivableAmount">
+          <el-form-item label="实收金额：" prop="receivableAmount">
             <el-input
-              v-model.trim="dataForm.receivableAmount" @input="clateDiscount()" :disabled="this.params.orderId.length > 0"></el-input>
+              v-model.trim="dataForm.receivableAmount" @input="clateCollectingAmount()" :disabled="this.params.orderId.length > 0"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -80,9 +80,9 @@
           </el-form-item>
         </el-col>
         <el-col :span="6" :offset="3">
-          <el-form-item label="折扣：">
+          <el-form-item label="代收金额：" prop="collectingAmount">
             <el-input
-              v-model.trim="dataForm.discount" :disabled="true"></el-input>
+              v-model.trim="dataForm.collectingAmount" :disabled="true"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -252,7 +252,7 @@
       <el-row type="flex" class="row-bg" >
         <el-col :span="15" :offset="2">
           <el-form-item label="备注：" :disabled="routeParams.readonly">
-            <el-input type="textarea" v-model="dataForm.remark" :disabled="routeParams.readonly"></el-input>
+            <el-input type="textarea" v-model="dataForm.remark" placeholder="代收金额，预收款，尾款" :disabled="routeParams.readonly"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -396,7 +396,7 @@
             salesmanNo:'',
           payWay:'',
           preReceivableRatio:'',
-          discount:'',
+            collectingAmount:'',
           totalAmount:'',
           receivableAmount:'',
           preReceivableAmount:'',
@@ -405,7 +405,7 @@
         },
         rules: {
           orderNumber: [{required: true, message: '订单号不能为空'}],
-          // orderName: [{required: true, message: '订单名称不能为空'}],
+          collectingAmount: [{required: true, message: '代收金额不能为空'}],
           receipt: [{required: true, message: '收据号不能为空'}],
           customer: [{required: true, message: '客户名不能为空'}],
           orderDate: [{required: true, message: '订货时间不能为空'}],
@@ -420,8 +420,8 @@
           salesmanNo: [{required: true, message: '销售员能为空'}],
           payWay: [{required: true, message: '支付方式不能为空'}],
           // preReceivableRatio: [{required: true, message: '预收款比例不能为空'}],
-          totalAmount: [{required: true, message: '合计原价不能为空'}],
-          receivableAmount: [{required: true, message: '应收金额不能为空'}],
+          totalAmount: [{required: true, message: '成交金额不能为空'}],
+          receivableAmount: [{required: true, message: '实收金额不能为空'}],
           preReceivableAmount: [{required: true, message: '预收金额不能为空'}],
           repayAmount: [{required: true, message: '补交金额不能为空'}],
           provinceInfo: [{required: true, message: '省不能为空'}],
@@ -511,15 +511,15 @@
       },
       clateReceivableAmount(){
         if(this.dataForm.receivableAmount && this.dataForm.receivableAmount != ''){
-          let num2 = this.dataForm.receivableAmount / this.dataForm.totalAmount;
-          this.dataForm.discount = num2.toFixed(2)
+          let num2 = this.dataForm.totalAmount - this.dataForm.receivableAmount;
+          this.dataForm.collectingAmount = num2.toFixed(2)
         }
       },
-      clateDiscount(){
+      clateCollectingAmount(){
         console.log(this.dataForm.receivableAmount)
         if(this.dataForm.totalAmount && this.dataForm.totalAmount != '') {
-          let num2 = this.dataForm.receivableAmount / this.dataForm.totalAmount;
-          this.dataForm.discount = num2.toFixed(2)
+            let num2 = this.dataForm.totalAmount - this.dataForm.receivableAmount;
+            this.dataForm.collectingAmount = num2.toFixed(2)
         }
         if(this.dataForm.preReceivableAmount && this.dataForm.preReceivableAmount != ''){
           let num = this.dataForm.receivableAmount - this.dataForm.preReceivableAmount;
